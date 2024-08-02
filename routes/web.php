@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('ssh', [SSHController::class, 'index'])->name('ssh');
     Route::post('ssh', [SSHController::class, 'connect'])->name('ssh.connect');
+    Route::post('ssh/exec', [SSHController::class, 'execute'])->name('ssh.exec');
 
     Route::get('dns/{zoneId?}', [DNSController::class, 'index'])->name('dns.index');
     Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');

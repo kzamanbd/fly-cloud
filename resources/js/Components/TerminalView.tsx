@@ -1,46 +1,72 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 
 type TerminalProps = {
-    host: string;
-    username: string;
-    password: string;
+    sessionId: string;
+    setCommand: React.Dispatch<React.SetStateAction<string>>;
 };
-
-const TerminalView = ({ host, username, password }: TerminalProps) => {
+const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
     const terminalRef = useRef(null) as any;
-    const socketRef = useRef(null) as any;
+    const [term, setTerm] = useState<any>(null);
+
+    const echo = window.Echo;
 
     useEffect(() => {
-        const term = new Terminal();
-        term.open(terminalRef.current);
+        const instance = new Terminal();
+        instance.open(terminalRef.current);
+        setTerm(instance);
+        instance.writeln('Welcome to the SSH Terminal');
+        instance.focus();
 
-        socketRef.current = new WebSocket('ws://localhost:8080');
-
-        socketRef.current.onopen = () => {
-            term.writeln('WebSocket connection established');
-            socketRef.current.send(JSON.stringify({ host, username, password, command: 'whoami' }));
+        const startSession = async () => {
+            console.log('Session ID', sessionId);
+            echo.channel(`ssh-room-${sessionId}`).listen('SshOutput', (data: any) => {
+                console.log('ssh-output data', data);
+                if (data.output) {
+                    instance.writeln(data.output);
+                } else if (data.error) {
+                    instance.writeln(`Error: ${data.error}`);
+                }
+            });
         };
 
-        socketRef.current.onmessage = (event: any) => {
-            const data = JSON.parse(event.data);
-            if (data.output) {
-                term.writeln(data.output);
-            } else if (data.error) {
-                term.writeln(`Error: ${data.error}`);
-            }
-        };
-
-        term.onData((data) => {
-            socketRef.current.send(JSON.stringify({ command: data }));
-        });
+        startSession();
 
         return () => {
-            term.dispose();
-            socketRef.current.close();
+            if (sessionId) {
+                fetch('/stop-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sessionId })
+                });
+                instance.dispose();
+                echo.leave(`ssh-room-${sessionId}`);
+            }
         };
-    }, [host, username, password]);
+    }, [sessionId]);
+
+    useEffect(() => {
+        if (term) {
+            term.onData((data: string) => {
+                if (data === '\r') {
+                    term.write('\r\n');
+                } else {
+                    // if click backspace key then remove last character from command
+                    if (data.charCodeAt(0) === 127) {
+                        term.write('\b \b');
+                        return;
+                    } else {
+                        term.write(data);
+                    }
+                }
+
+                setCommand((prev) => prev + data);
+            });
+        }
+    }, [term, sessionId]);
 
     return <div ref={terminalRef} style={{ height: '100%', width: '100%' }} />;
 };

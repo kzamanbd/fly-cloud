@@ -34,6 +34,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'sshSessionId' => $request->session()->get('sshSessionId'),
             'notify' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
