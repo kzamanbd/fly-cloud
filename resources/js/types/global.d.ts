@@ -4,7 +4,9 @@ import { route as ziggyRoute } from 'ziggy-js';
 declare global {
     interface Window {
         axios: AxiosInstance;
+        Echo: any;
     }
 
     var route: typeof ziggyRoute;
 }
+

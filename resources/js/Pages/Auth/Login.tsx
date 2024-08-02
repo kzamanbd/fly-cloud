@@ -7,18 +7,24 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 
-export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
+export default function Login({
+    status,
+    canResetPassword
+}: {
+    status?: string;
+    canResetPassword: boolean;
+}) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
-        password: '',
-        remember: false,
+        email: 'test@example.com',
+        password: 'password',
+        remember: false
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
         post(route('login'), {
-            onFinish: () => reset('password'),
+            onFinish: () => reset('password')
         });
     };
 
@@ -77,8 +83,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
+                            className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Forgot your password?
                         </Link>
                     )}
@@ -91,3 +96,4 @@ export default function Login({ status, canResetPassword }: { status?: string, c
         </GuestLayout>
     );
 }
+
