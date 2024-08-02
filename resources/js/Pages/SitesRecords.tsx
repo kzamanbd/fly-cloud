@@ -16,7 +16,6 @@ type Props = PageProps & {
 export default ({ auth, sites }: Props) => {
     console.log(`[sites]`, sites);
 
-    const [addSiteRecord, setAddSiteRecord] = useState(false);
     const nameInput = useRef<HTMLInputElement>(null);
 
     const {
@@ -36,14 +35,14 @@ export default ({ auth, sites }: Props) => {
 
         post(route('sites.store'), {
             preserveScroll: true,
-            onSuccess: () => toggleModal(),
+            onSuccess: () => toggleModalHandler(),
             onError: () => nameInput.current?.focus(),
             onFinish: () => reset()
         });
     };
-
-    const toggleModal = () => {
-        setAddSiteRecord((prev) => !prev);
+    const [toggleModal, setToggleModal] = useState(false);
+    const toggleModalHandler = () => {
+        setToggleModal((prev) => !prev);
 
         reset();
     };
@@ -54,7 +53,10 @@ export default ({ auth, sites }: Props) => {
             header={
                 <div className="flex justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">Sites</h2>
-                    <PrimaryButton className="ms-4" onClick={toggleModal} disabled={processing}>
+                    <PrimaryButton
+                        className="ms-4"
+                        onClick={toggleModalHandler}
+                        disabled={processing}>
                         Add Site
                     </PrimaryButton>
                 </div>
@@ -150,7 +152,7 @@ export default ({ auth, sites }: Props) => {
                 </div>
             </div>
 
-            <Modal show={addSiteRecord} onClose={toggleModal}>
+            <Modal show={toggleModal} onClose={toggleModalHandler}>
                 <form onSubmit={addSiteRecordAction} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">Add Site Record</h2>
 
@@ -196,7 +198,7 @@ export default ({ auth, sites }: Props) => {
                     </div>
 
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={toggleModal}>Cancel</SecondaryButton>
+                        <SecondaryButton onClick={toggleModalHandler}>Cancel</SecondaryButton>
 
                         <PrimaryButton className="ms-3" disabled={processing}>
                             Save Site
