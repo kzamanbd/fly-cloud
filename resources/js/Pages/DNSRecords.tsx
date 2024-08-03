@@ -7,7 +7,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { FormEventHandler, useRef, useState } from 'react';
+import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { dateFormat } from '@/utils';
 
@@ -38,7 +38,9 @@ export default ({ auth, zones }: Props) => {
         ttl: 'Auto'
     });
 
-    const [zoneId, setZoneId] = useState('4994921dd63598ee59c59abefe48e205');
+    const params = new URLSearchParams(window.location.search);
+
+    const [zoneId, setZoneId] = useState(params.get('zoneId') || '');
 
     const types = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'CAA'];
 
@@ -57,6 +59,12 @@ export default ({ auth, zones }: Props) => {
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        if (zoneId) {
+            zoneChangeHandler({ target: { value: zoneId } });
+        }
+    }, [zoneId]);
 
     const storeRecordAction: FormEventHandler = (e) => {
         e.preventDefault();
@@ -164,7 +172,7 @@ export default ({ auth, zones }: Props) => {
                                             <label>TTL</label>
                                             <div className="flex">
                                                 <select
-                                                    disabled={!form.proxy_status}
+                                                    disabled={form.proxy_status}
                                                     className="form-select rounded-r-none"
                                                     onChange={(e) => {
                                                         setData('ttl', e.target.value);
@@ -257,7 +265,9 @@ export default ({ auth, zones }: Props) => {
                                             id="countries"
                                             onChange={zoneChangeHandler}
                                             className="form-select">
-                                            <option defaultChecked>Choose a zone</option>
+                                            <option defaultChecked defaultValue="">
+                                                Zone
+                                            </option>
                                             {zones.map((zone) => (
                                                 <option key={zone.id} value={zone.id}>
                                                     {zone.name}

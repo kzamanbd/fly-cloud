@@ -21,8 +21,6 @@ export default ({ auth }: PageProps) => {
 
     let params = new URLSearchParams(window.location.search);
     const sessionId = params.get('sessionId') || '';
-    console.log('Session ID', sessionId);
-    // const [sessionId, setSessionId] = useState('');
     const [command, setCommand] = useState('');
 
     useEffect(() => {
