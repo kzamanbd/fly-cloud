@@ -93,7 +93,7 @@ class SSHAction implements Serializable
             throw new \Exception('Not connected to SSH');
         }
         $output = $this->ssh->exec($command);
-        return mb_convert_encoding($output, 'UTF-8', 'UTF-8');
+        return mb_convert_encoding($output, 'UTF-8');
     }
 
     public function disconnect()

@@ -16,8 +16,19 @@ class SSHController extends Controller
         //
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->get('sessionId')) {
+            $sshAction = Cache::get($request->get('sessionId'));
+            if (!$sshAction) {
+                return redirect(route('ssh'));
+            }
+            $output = trim(mb_convert_encoding($sshAction->execute('whoami'), 'UTF-8'));
+            $output .= '@' . trim(mb_convert_encoding($sshAction->execute('hostname'), 'UTF-8'));
+            return inertia('SSHConnection', [
+                'output' => $output
+            ]);
+        }
         return inertia('SSHConnection');
     }
 

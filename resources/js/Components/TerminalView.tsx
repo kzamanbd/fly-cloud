@@ -17,8 +17,8 @@ const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
         const instance = new Terminal();
         instance.open(terminalRef.current);
         setTerm(instance);
-        instance.writeln('Welcome to the SSH Terminal');
         if (output) {
+            instance.writeln('Welcome to the SSH Terminal');
             instance.writeln(output);
         }
         instance.focus();

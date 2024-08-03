@@ -21,8 +21,8 @@ class SshOutput implements ShouldBroadcast
     public function __construct($sessionId, $output)
     {
         $this->sessionId = $sessionId;
-        $this->output = mb_convert_encoding($output, 'UTF-8', 'UTF-8');
-        Log::info('Broadcasting SSH output', ['sessionId' => $sessionId, 'output' => $output]);
+        $this->output = mb_convert_encoding($output, 'UTF-8');
+        Log::info('Broadcasting SSH output', [$output]);
     }
 
     /**
