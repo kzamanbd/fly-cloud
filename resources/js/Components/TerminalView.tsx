@@ -5,8 +5,9 @@ import '@xterm/xterm/css/xterm.css';
 type TerminalProps = {
     sessionId: string;
     setCommand: React.Dispatch<React.SetStateAction<string>>;
+    output: string;
 };
-const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
+const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
     const terminalRef = useRef(null) as any;
     const [term, setTerm] = useState<any>(null);
 
@@ -17,6 +18,9 @@ const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
         instance.open(terminalRef.current);
         setTerm(instance);
         instance.writeln('Welcome to the SSH Terminal');
+        if (output) {
+            instance.writeln(output);
+        }
         instance.focus();
 
         const startSession = async () => {

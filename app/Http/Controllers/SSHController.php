@@ -63,13 +63,6 @@ class SSHController extends Controller
             return response()->json(['error' => 'Invalid session'], 400);
         }
 
-        // $this->sshAction->connectWithPassword(
-        //     $cacheKey['host'],
-        //     $cacheKey['port'],
-        //     $cacheKey['username'],
-        //     $cacheKey['password']
-        // );
-
         $output = $sshAction->execute($request->input('command'));
 
         broadcast(new SshOutput($request->input('sessionId'), $output));

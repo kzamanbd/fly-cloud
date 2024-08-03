@@ -9,7 +9,12 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TerminalView from '@/Components/TerminalView';
 import Modal from '@/Components/Modal';
 
-export default ({ auth }: PageProps) => {
+type SSHConnectionProps = PageProps & {
+    output: string;
+};
+
+export default ({ auth, output }: SSHConnectionProps) => {
+    console.log('Output', output);
     const { data, setData, post, processing, errors } = useForm({
         name: 'Test Connection',
         host: '203.188.245.58',
@@ -80,7 +85,13 @@ export default ({ auth }: PageProps) => {
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto items-center sm:px-6 lg:px-8">
-                    {sessionId && <TerminalView sessionId={sessionId} setCommand={setCommand} />}
+                    {sessionId && (
+                        <TerminalView
+                            output={output}
+                            sessionId={sessionId}
+                            setCommand={setCommand}
+                        />
+                    )}
                 </div>
             </div>
             <Modal show={toggleModal} onClose={toggleModalHandler}>
