@@ -1,15 +1,10 @@
-import { Head, usePage, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { DNSRecord, PageProps, SiteRecord } from '@/types';
+import { DNSRecord, PageProps } from '@/types';
 import PrimaryButton from '@/Components/PrimaryButton';
-import Modal from '@/Components/Modal';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import InputError from '@/Components/InputError';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { dateFormat } from '@/utils';
+import { toast } from 'react-toastify';
 
 type Props = PageProps & {
     zones: any[];
@@ -21,7 +16,6 @@ export default ({ auth, zones }: Props) => {
     const [records, setRecords] = useState<DNSRecord[]>([]);
 
     const [isModal, setIsModal] = useState(false);
-    const nameInput = useRef<HTMLInputElement>(null);
 
     const {
         data: form,
@@ -31,11 +25,11 @@ export default ({ auth, zones }: Props) => {
         reset,
         errors
     } = useForm({
-        name: '*.draftscripts.com',
-        type: 'CNAME',
+        name: '@',
+        type: 'A',
         content: '76.76.21.61',
-        proxy_status: false,
-        ttl: 'Auto'
+        proxied: false,
+        ttl: 1
     });
 
     const params = new URLSearchParams(window.location.search);
@@ -44,13 +38,20 @@ export default ({ auth, zones }: Props) => {
 
     const types = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'CAA'];
 
-    const ttls = ['1 minute', '5 minutes', '10 minutes', '15 minutes', '30 minutes', '1 hour'];
+    const timeToLive = [
+        { value: '1', label: '1 minute' },
+        { value: '120', label: '2 minutes' },
+        { value: '300', label: '5 minutes' },
+        { value: '600', label: '10 minutes' },
+        { value: '900', label: '15 minutes' },
+        { value: '1800', label: '30 minutes' },
+        { value: '3600', label: '1 hour' }
+    ];
 
-    const zoneChangeHandler = async (e: any) => {
-        const zoneId = e.target.value;
-        setZoneId(zoneId);
+    const fetchRecords = async () => {
         try {
             if (!zoneId) {
+                toast.error('Zone ID is required.');
                 return;
             }
             const response = await window.axios.get(route('dns.records', zoneId));
@@ -62,18 +63,20 @@ export default ({ auth, zones }: Props) => {
 
     useEffect(() => {
         if (zoneId) {
-            zoneChangeHandler({ target: { value: zoneId } });
+            fetchRecords();
         }
     }, [zoneId]);
 
     const storeRecordAction: FormEventHandler = (e) => {
         e.preventDefault();
+        if (!zoneId) {
+            toast.error('Zone ID is required.');
+            return;
+        }
 
         post(route('dns.store', zoneId), {
             preserveScroll: true,
-            onSuccess: () => toggleModal(),
-            onError: () => nameInput.current?.focus(),
-            onFinish: () => reset()
+            onSuccess: () => toggleModal()
         });
     };
 
@@ -119,8 +122,9 @@ export default ({ auth, zones }: Props) => {
                                                 onChange={(e) => {
                                                     setData('type', e.target.value);
                                                 }}
+                                                value={form.type}
                                                 required>
-                                                <option defaultChecked>Type</option>
+                                                <option hidden>Type</option>
                                                 {types.map((type) => (
                                                     <option key={type} value={type}>
                                                         {type}
@@ -134,6 +138,7 @@ export default ({ auth, zones }: Props) => {
                                                 id="name"
                                                 placeholder="Enter name"
                                                 className="form-input"
+                                                value={form.name}
                                                 onChange={(e) => setData('name', e.target.value)}
                                                 required
                                             />
@@ -144,6 +149,7 @@ export default ({ auth, zones }: Props) => {
                                                 <input
                                                     id="content"
                                                     placeholder="Content"
+                                                    value={form.content}
                                                     onChange={(e) =>
                                                         setData('content', e.target.value)
                                                     }
@@ -154,12 +160,13 @@ export default ({ auth, zones }: Props) => {
                                         </div>
 
                                         <div className="flex flex-col justify-around items-center">
-                                            <label htmlFor="proxy_status">Proxy Status</label>
+                                            <label htmlFor="proxied">Proxy Status</label>
                                             <label className="relative h-6 w-12 m-0">
                                                 <input
                                                     onChange={(e) => {
-                                                        setData('proxy_status', e.target.checked);
+                                                        setData('proxied', e.target.checked);
                                                     }}
+                                                    checked={form.proxied}
                                                     type="checkbox"
                                                     className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
                                                     id="custom_switch_checkbox2"
@@ -172,17 +179,18 @@ export default ({ auth, zones }: Props) => {
                                             <label>TTL</label>
                                             <div className="flex">
                                                 <select
-                                                    disabled={form.proxy_status}
+                                                    disabled={form.proxied}
                                                     className="form-select rounded-r-none"
+                                                    value={form.ttl}
                                                     onChange={(e) => {
-                                                        setData('ttl', e.target.value);
+                                                        setData('ttl', Number(e.target.value));
                                                     }}>
                                                     <option defaultChecked defaultValue="Auto">
                                                         Auto
                                                     </option>
-                                                    {ttls.map((ttl) => (
-                                                        <option key={ttl} value={ttl}>
-                                                            {ttl}
+                                                    {timeToLive.map((ttl) => (
+                                                        <option key={ttl.value} value={ttl.value}>
+                                                            {ttl.label}
                                                         </option>
                                                     ))}
                                                 </select>
@@ -263,11 +271,10 @@ export default ({ auth, zones }: Props) => {
                                         </label>
                                         <select
                                             id="countries"
-                                            onChange={zoneChangeHandler}
-                                            className="form-select">
-                                            <option defaultChecked defaultValue="">
-                                                Zone
-                                            </option>
+                                            onChange={(e) => setZoneId(e.target.value)}
+                                            className="form-select"
+                                            value={zoneId}>
+                                            <option hidden>Zone</option>
                                             {zones.map((zone) => (
                                                 <option key={zone.id} value={zone.id}>
                                                     {zone.name}
@@ -344,7 +351,7 @@ export default ({ auth, zones }: Props) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="h-[calc(100vh-370px)] overflow-y-auto">
+                                <tbody className="max-h-[calc(100vh-370px)] overflow-y-auto">
                                     {records.map((dns: DNSRecord) => (
                                         <tr
                                             key={dns.id}

@@ -1,10 +1,12 @@
-import { useState, PropsWithChildren, ReactNode } from 'react';
+import { useState, PropsWithChildren, ReactNode, useEffect } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { User } from '@/types';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Authenticated({
     user,
@@ -12,6 +14,17 @@ export default function Authenticated({
     children
 }: PropsWithChildren<{ user: User; header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const props = usePage().props;
+    const notify = props.notify as any;
+
+    useEffect(() => {
+        if (notify?.success) {
+            toast.success(notify.success);
+        } else if (notify?.error) {
+            toast.error(notify.error);
+        }
+    }, [notify]);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -159,6 +172,7 @@ export default function Authenticated({
             )}
 
             <main>{children}</main>
+            <ToastContainer />
         </div>
     );
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\DNSAction;
 use App\Actions\SSHAction;
+use Exception;
 use Illuminate\Http\Request;
 
 class DNSController extends Controller
@@ -34,12 +35,21 @@ class DNSController extends Controller
             'type' => 'required|string',
             'name' => 'required|string',
             'content' => 'required|string',
-            'ttl' => 'required|string',
+            'ttl' => 'required|numeric',
+            'proxied' => 'required|boolean',
         ]);
 
-        $this->dnsAction->createRecord($zoneId, $validated['type'], $validated['name'], $validated['content']);
+        try {
+            $this->dnsAction->createRecord($zoneId, $validated);
 
-        return redirect()->route('dns.index', ['zoneId' => $zoneId]);
+            return redirect()->route('dns.index', [
+                'zoneId' => $zoneId
+            ])->with('success', 'Record created successfully');
+        } catch (Exception $e) {
+            return redirect()->route('dns.index', [
+                'zoneId' => $zoneId
+            ])->with('error', $e->getMessage());
+        }
     }
 
     public function update(Request $request, $zoneId, $recordId)
@@ -49,10 +59,21 @@ class DNSController extends Controller
             'name' => 'required|string',
             'content' => 'required|string',
             'ttl' => 'required|string',
+            'proxied' => 'required|boolean',
         ]);
 
-        $this->dnsAction->updateRecord($zoneId, $recordId, $validated['type'], $validated['name'], $validated['content']);
+        try {
+            $this->dnsAction->updateRecord($zoneId, $recordId, $validated);
 
-        return redirect()->route('dns.index', ['zoneId' => $zoneId]);
+            return redirect()->route(
+                'dns.index',
+                ['zoneId' => $zoneId]
+            )->with('success', 'Record updated successfully');
+        } catch (Exception $e) {
+            return redirect()->route(
+                'dns.index',
+                ['zoneId' => $zoneId]
+            )->with('error', $e->getMessage());
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -22,90 +23,51 @@ class DNSAction
 
     public function getRecords($zoneId)
     {
-        try {
-            $response = $this->client->request('GET', "zones/{$zoneId}/dns_records", [
-                'headers' => [
-                    'Authorization' => "Bearer {$this->apiToken}",
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
+        $response = $this->client->request('GET', "zones/{$zoneId}/dns_records", [
+            'headers' => [
+                'Authorization' => "Bearer {$this->apiToken}",
+                'Content-Type' => 'application/json',
+            ],
+        ]);
 
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            return [
-                'result' => [],
-                'error' => $e->getMessage(),
-            ];
-        }
+        return json_decode($response->getBody(), true);
     }
 
-    public function createRecord($zoneId, $type, $name, $content)
+    public function createRecord($zoneId, $data)
     {
-        try {
-            $response = $this->client->request('POST', "zones/{$zoneId}/dns_records", [
-                'headers' => [
-                    'Authorization' => "Bearer {$this->apiToken}",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'type' => $type,
-                    'name' => $name,
-                    'content' => $content,
-                    'ttl' => 120,
-                ],
-            ]);
+        $response = $this->client->request('POST', "zones/{$zoneId}/dns_records", [
+            'headers' => [
+                'Authorization' => "Bearer {$this->apiToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $data
+        ]);
 
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            return [
-                'result' => [],
-                'error' => $e->getMessage(),
-            ];
-        }
+        return json_decode($response->getBody(), true);
     }
 
-    public function updateRecord($zoneId, $recordId, $type, $name, $content)
+    public function updateRecord($zoneId, $recordId, $data)
     {
-        try {
-            $response = $this->client->request('PUT', "zones/{$zoneId}/dns_records/{$recordId}", [
-                'headers' => [
-                    'Authorization' => "Bearer {$this->apiToken}",
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'type' => $type,
-                    'name' => $name,
-                    'content' => $content,
-                    'ttl' => 120,
-                ],
-            ]);
+        $response = $this->client->request('PUT', "zones/{$zoneId}/dns_records/{$recordId}", [
+            'headers' => [
+                'Authorization' => "Bearer {$this->apiToken}",
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $data,
+        ]);
 
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            return [
-                'result' => [],
-                'error' => $e->getMessage(),
-            ];
-        }
+        return json_decode($response->getBody(), true);
     }
 
     public function getZones()
     {
-        try {
-            $response = $this->client->request('GET', 'zones', [
-                'headers' => [
-                    'Authorization' => "Bearer {$this->apiToken}",
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
+        $response = $this->client->request('GET', 'zones', [
+            'headers' => [
+                'Authorization' => "Bearer {$this->apiToken}",
+                'Content-Type' => 'application/json',
+            ],
+        ]);
 
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return [
-                'result' => [],
-                'error' => $e->getMessage(),
-            ];
-        }
+        return json_decode($response->getBody(), true);
     }
 }
