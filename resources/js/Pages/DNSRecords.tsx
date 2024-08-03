@@ -20,7 +20,7 @@ export default ({ auth, zones }: Props) => {
 
     const [records, setRecords] = useState<DNSRecord[]>([]);
 
-    const [addSiteRecord, setAddSiteRecord] = useState(false);
+    const [isModal, setIsModal] = useState(false);
     const nameInput = useRef<HTMLInputElement>(null);
 
     const {
@@ -31,13 +31,22 @@ export default ({ auth, zones }: Props) => {
         reset,
         errors
     } = useForm({
-        name: '',
-        path: ''
+        name: '*.draftscripts.com',
+        type: 'CNAME',
+        content: '76.76.21.61',
+        proxy_status: false,
+        ttl: 'Auto'
     });
+
+    const [zoneId, setZoneId] = useState('4994921dd63598ee59c59abefe48e205');
+
+    const types = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'CAA'];
+
+    const ttls = ['1 minute', '5 minutes', '10 minutes', '15 minutes', '30 minutes', '1 hour'];
 
     const zoneChangeHandler = async (e: any) => {
         const zoneId = e.target.value;
-
+        setZoneId(zoneId);
         try {
             if (!zoneId) {
                 return;
@@ -52,7 +61,7 @@ export default ({ auth, zones }: Props) => {
     const storeRecordAction: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('dns.store'), {
+        post(route('dns.store', zoneId), {
             preserveScroll: true,
             onSuccess: () => toggleModal(),
             onError: () => nameInput.current?.focus(),
@@ -61,7 +70,7 @@ export default ({ auth, zones }: Props) => {
     };
 
     const toggleModal = () => {
-        setAddSiteRecord((prev) => !prev);
+        setIsModal((prev) => !prev);
 
         reset();
     };
@@ -70,11 +79,14 @@ export default ({ auth, zones }: Props) => {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <div className="flex justify-between">
-                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                        DNS Records
-                    </h2>
-                    <PrimaryButton className="ms-4" onClick={toggleModal} disabled={processing}>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                            DNS Records
+                        </h2>
+                        <p>Manage DNS records of your domain.</p>
+                    </div>
+                    <PrimaryButton onClick={toggleModal} disabled={processing}>
                         Add Record
                     </PrimaryButton>
                 </div>
@@ -85,6 +97,154 @@ export default ({ auth, zones }: Props) => {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            {isModal && (
+                                <form onSubmit={storeRecordAction} className="space-y-5 px-6 py-3">
+                                    <p className="mt-1 text-sm text-gray-600">
+                                        [name] points to [IPv4 address] and has its traffic proxied
+                                        through Cloudflare.
+                                    </p>
+                                    <div className="grid grid-cols-1 gap-5 md:grid-cols-6">
+                                        <div>
+                                            <label htmlFor="name">Type</label>
+                                            <select
+                                                className="form-select"
+                                                onChange={(e) => {
+                                                    setData('type', e.target.value);
+                                                }}
+                                                required>
+                                                <option defaultChecked>Type</option>
+                                                {types.map((type) => (
+                                                    <option key={type} value={type}>
+                                                        {type}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="name">Name</label>
+                                            <input
+                                                id="name"
+                                                placeholder="Enter name"
+                                                className="form-input"
+                                                onChange={(e) => setData('name', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label htmlFor="content">Content</label>
+                                            <div className="flex">
+                                                <input
+                                                    id="content"
+                                                    placeholder="Content"
+                                                    onChange={(e) =>
+                                                        setData('content', e.target.value)
+                                                    }
+                                                    className="form-input"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col justify-around items-center">
+                                            <label htmlFor="proxy_status">Proxy Status</label>
+                                            <label className="relative h-6 w-12 m-0">
+                                                <input
+                                                    onChange={(e) => {
+                                                        setData('proxy_status', e.target.checked);
+                                                    }}
+                                                    type="checkbox"
+                                                    className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
+                                                    id="custom_switch_checkbox2"
+                                                />
+                                                <span className="outline_checkbox bg-icon dark:border-white-dark dark:before:bg-white-dark block h-full rounded-full border-2 border-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-[#ebedf2] before:bg-[url('/images/close.svg')] before:bg-center before:bg-no-repeat before:transition-all before:duration-300 peer-checked:border-primary peer-checked:before:left-7 peer-checked:before:bg-primary peer-checked:before:bg-[url('/images/checked.svg')]"></span>
+                                            </label>
+                                            Proxied
+                                        </div>
+                                        <div>
+                                            <label>TTL</label>
+                                            <div className="flex">
+                                                <select
+                                                    disabled={!form.proxy_status}
+                                                    className="form-select rounded-r-none"
+                                                    onChange={(e) => {
+                                                        setData('ttl', e.target.value);
+                                                    }}>
+                                                    <option defaultChecked defaultValue="Auto">
+                                                        Auto
+                                                    </option>
+                                                    {ttls.map((ttl) => (
+                                                        <option key={ttl} value={ttl}>
+                                                            {ttl}
+                                                        </option>
+                                                    ))}
+                                                </select>
+
+                                                <button
+                                                    type="submit"
+                                                    className="flex items-center justify-center rounded-r-md border border-l-0 border-[#e0e6ed] bg-[#eee] px-3 font-semibold dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                                    {processing ? (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="24px"
+                                                            height="24px"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="1.5"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            className="text-white-dark h-5 w-5 animate-spin">
+                                                            <line
+                                                                x1="12"
+                                                                y1="2"
+                                                                x2="12"
+                                                                y2="6"></line>
+                                                            <line
+                                                                x1="12"
+                                                                y1="18"
+                                                                x2="12"
+                                                                y2="22"></line>
+                                                            <line
+                                                                x1="4.93"
+                                                                y1="4.93"
+                                                                x2="7.76"
+                                                                y2="7.76"></line>
+                                                            <line
+                                                                x1="16.24"
+                                                                y1="16.24"
+                                                                x2="19.07"
+                                                                y2="19.07"></line>
+                                                            <line
+                                                                x1="2"
+                                                                y1="12"
+                                                                x2="6"
+                                                                y2="12"></line>
+                                                            <line
+                                                                x1="18"
+                                                                y1="12"
+                                                                x2="22"
+                                                                y2="12"></line>
+                                                            <line
+                                                                x1="4.93"
+                                                                y1="19.07"
+                                                                x2="7.76"
+                                                                y2="16.24"></line>
+                                                            <line
+                                                                x1="16.24"
+                                                                y1="7.76"
+                                                                x2="19.07"
+                                                                y2="4.93"></line>
+                                                        </svg>
+                                                    ) : (
+                                                        'Add'
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            )}
+
                             <div className="relative px-6 py-3 flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between">
                                 <div>
                                     <form className="w-auto min-w-64 mx-auto">
@@ -96,7 +256,7 @@ export default ({ auth, zones }: Props) => {
                                         <select
                                             id="countries"
                                             onChange={zoneChangeHandler}
-                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                            className="form-select">
                                             <option defaultChecked>Choose a zone</option>
                                             {zones.map((zone) => (
                                                 <option key={zone.id} value={zone.id}>
@@ -207,61 +367,6 @@ export default ({ auth, zones }: Props) => {
                     </div>
                 </div>
             </div>
-
-            <Modal show={addSiteRecord} onClose={toggleModal}>
-                <form onSubmit={storeRecordAction} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">Add Site Record</h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Add a new site record to your account. This will allow you to manage DNS
-                        records for the site. DNS records are used to map domain names to IP
-                        addresses.
-                    </p>
-
-                    <div className="mt-6">
-                        <InputLabel htmlFor="site-name" value="Site Name" />
-
-                        <TextInput
-                            id="site-name"
-                            type="text"
-                            name="site-name"
-                            ref={nameInput}
-                            value={form.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            className="mt-1 block w-full"
-                            isFocused
-                            placeholder="Site Name"
-                        />
-
-                        <InputError message={errors.name} className="mt-2" />
-                    </div>
-
-                    <div className="mt-6">
-                        <InputLabel htmlFor="site-path" value="Site URL" />
-
-                        <TextInput
-                            id="site-path"
-                            type="text"
-                            name="site-path"
-                            value={form.path}
-                            onChange={(e) => setData('path', e.target.value)}
-                            className="mt-1 block w-full"
-                            isFocused
-                            placeholder="Site Name"
-                        />
-
-                        <InputError message={errors.path} className="mt-2" />
-                    </div>
-
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={toggleModal}>Cancel</SecondaryButton>
-
-                        <PrimaryButton className="ms-3" disabled={processing}>
-                            Save Site
-                        </PrimaryButton>
-                    </div>
-                </form>
-            </Modal>
         </AuthenticatedLayout>
     );
 };

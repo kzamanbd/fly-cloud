@@ -64,6 +64,31 @@ class DNSAction
         }
     }
 
+    public function updateRecord($zoneId, $recordId, $type, $name, $content)
+    {
+        try {
+            $response = $this->client->request('PUT', "zones/{$zoneId}/dns_records/{$recordId}", [
+                'headers' => [
+                    'Authorization' => "Bearer {$this->apiToken}",
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'type' => $type,
+                    'name' => $name,
+                    'content' => $content,
+                    'ttl' => 120,
+                ],
+            ]);
+
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            return [
+                'result' => [],
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
     public function getZones()
     {
         try {

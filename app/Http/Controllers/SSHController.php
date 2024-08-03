@@ -45,6 +45,7 @@ class SSHController extends Controller
             $request->session()->put('sshSessionId', $sessionId);
             $output = $sshAction->execute('whoami');
             Log::info($output);
+            return redirect(route('ssh', ['sessionId' => $sessionId]));
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
@@ -80,13 +81,13 @@ class SSHController extends Controller
         ]);
     }
 
-    public function stopSession(Request $request)
+    public function killSession(Request $request)
     {
         $request->validate(['sessionId' => 'required|string']);
 
-        $ssh = Cache::pull($request->input('sessionId'));
-        if ($ssh) {
-            $ssh->disconnect();
+        $sshAction = Cache::pull($request->input('sessionId'));
+        if ($sshAction) {
+            $sshAction->disconnect();
         }
 
         return response()->json(['success' => true]);

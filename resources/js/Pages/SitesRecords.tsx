@@ -41,9 +41,9 @@ export default ({ auth, sites }: Props) => {
             onFinish: () => reset()
         });
     };
-    const [toggleModal, setToggleModal] = useState(false);
+    const [isModal, setIsModal] = useState(false);
     const toggleModalHandler = () => {
-        setToggleModal((prev) => !prev);
+        setIsModal((prev) => !prev);
 
         reset();
     };
@@ -141,7 +141,7 @@ export default ({ auth, sites }: Props) => {
                 </div>
             </div>
 
-            <Modal show={toggleModal} onClose={toggleModalHandler}>
+            <Modal show={isModal} onClose={toggleModalHandler}>
                 <form onSubmit={addSiteRecordAction} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">Add Site Record</h2>
 

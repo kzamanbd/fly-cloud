@@ -22,10 +22,11 @@ Route::middleware('auth')->group(function () {
     Route::get('ssh', [SSHController::class, 'index'])->name('ssh');
     Route::post('ssh', [SSHController::class, 'connect'])->name('ssh.connect');
     Route::post('ssh/exec', [SSHController::class, 'execute'])->name('ssh.exec');
+    Route::get('ssh/kill-session', [SSHController::class, 'killSession'])->name('ssh.kill');
 
     Route::get('dns', [DNSController::class, 'index'])->name('dns.index');
-    Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');
+    Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteController::class]);
 });
 

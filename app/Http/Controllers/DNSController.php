@@ -34,9 +34,24 @@ class DNSController extends Controller
             'type' => 'required|string',
             'name' => 'required|string',
             'content' => 'required|string',
+            'ttl' => 'required|string',
         ]);
 
         $this->dnsAction->createRecord($zoneId, $validated['type'], $validated['name'], $validated['content']);
+
+        return redirect()->route('dns.index', ['zoneId' => $zoneId]);
+    }
+
+    public function update(Request $request, $zoneId, $recordId)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string',
+            'name' => 'required|string',
+            'content' => 'required|string',
+            'ttl' => 'required|string',
+        ]);
+
+        $this->dnsAction->updateRecord($zoneId, $recordId, $validated['type'], $validated['name'], $validated['content']);
 
         return redirect()->route('dns.index', ['zoneId' => $zoneId]);
     }

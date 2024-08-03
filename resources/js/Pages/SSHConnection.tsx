@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { FormEventHandler, useEffect, useState } from 'react';
 import InputLabel from '@/Components/InputLabel';
@@ -19,7 +19,10 @@ export default ({ auth }: PageProps) => {
         privateKeyPath: ''
     });
 
-    const [sessionId, setSessionId] = useState('');
+    let params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('sessionId') || '';
+    console.log('Session ID', sessionId);
+    // const [sessionId, setSessionId] = useState('');
     const [command, setCommand] = useState('');
 
     useEffect(() => {
@@ -44,12 +47,12 @@ export default ({ auth }: PageProps) => {
 
         post(route('ssh.connect'), {
             onSuccess: (data) => {
-                setSessionId(data.props.sshSessionId as string);
+                // setSessionId(data.props.sshSessionId as string);
                 toggleModalHandler();
             },
             onError: (errors) => {
                 console.log('Errors', errors);
-                setSessionId('');
+                // setSessionId('');
             }
         });
     };

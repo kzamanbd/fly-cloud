@@ -35,12 +35,10 @@ const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
 
         return () => {
             if (sessionId) {
-                fetch('/stop-session', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ sessionId })
+                window.axios.get('/ssh/kill-session', {
+                    params: {
+                        sessionId
+                    }
                 });
                 instance.dispose();
                 echo.leave(`ssh-room-${sessionId}`);
