@@ -5,9 +5,7 @@ export interface User {
     email_verified_at: string;
 }
 
-export type PageProps<
-    T extends Record<string, unknown> = Record<string, unknown>
-> = T & {
+export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;
     };
@@ -20,8 +18,8 @@ export interface DNSRecord {
     content: string;
     ttl: number;
     priority: number;
-    created_at: string;
-    updated_at: string;
+    created_on: string;
+    modified_on: string;
 }
 
 export interface SiteRecord {
@@ -33,3 +31,4 @@ export interface SiteRecord {
     updated_at: string;
     dns_records: DNSRecord[];
 }
+

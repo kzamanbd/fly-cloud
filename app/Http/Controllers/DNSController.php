@@ -14,19 +14,18 @@ class DNSController extends Controller
         //
     }
 
-    public function index($zoneId = null)
+    public function index()
     {
-        $records = [
-            'result' => [],
-        ];
-        if ($zoneId) {
-            $records = $this->dnsAction->getRecords($zoneId);
-        }
         $zones = $this->dnsAction->getZones();
         return inertia('DNSRecords', [
-            'records' => $records['result'],
             'zones' => $zones['result'],
         ]);
+    }
+
+    public function getDNSRecords($zoneId)
+    {
+        $records = $this->dnsAction->getRecords($zoneId);
+        return response()->json($records);
     }
 
     public function store(Request $request, $zoneId)

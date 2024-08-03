@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { FormEventHandler, useEffect, useState } from 'react';
 import InputLabel from '@/Components/InputLabel';
@@ -10,7 +10,7 @@ import TerminalView from '@/Components/TerminalView';
 import Modal from '@/Components/Modal';
 
 export default ({ auth }: PageProps) => {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: 'Test Connection',
         host: '203.188.245.58',
         port: '8823',

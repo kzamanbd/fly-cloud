@@ -32,6 +32,18 @@ export default function Authenticated({
                                     Dashboard
                                 </NavLink>
 
+                                <NavLink
+                                    href={route('sites.index')}
+                                    active={route().current('sites.index')}>
+                                    Hosted Sites
+                                </NavLink>
+
+                                <NavLink
+                                    href={route('dns.index')}
+                                    active={route().current('dns.index')}>
+                                    DNS (Cloudflare)
+                                </NavLink>
+
                                 <NavLink href={route('ssh')} active={route().current('ssh')}>
                                     SSH
                                 </NavLink>
@@ -142,7 +154,7 @@ export default function Authenticated({
 
             {header && (
                 <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
+                    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">{header}</div>
                 </header>
             )}
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class SSHController extends Controller
 {
 
-    public function __construct(protected SSHAction $sshAction)
+    public function __construct()
     {
         //
     }
@@ -30,8 +30,10 @@ class SSHController extends Controller
             'password' => 'required|string'
         ]);
 
+        $sshAction = new SSHAction();
+
         try {
-            $ssh = $this->sshAction->connectWithPassword(
+            $sshAction->connectWithPassword(
                 $validated['host'],
                 $validated['port'],
                 $validated['username'],
@@ -39,14 +41,10 @@ class SSHController extends Controller
             );
 
             $sessionId = uniqid('ssh_', true);
-            Cache::put($sessionId, [
-                'host' => $validated['host'],
-                'port' => $validated['port'],
-                'username' => $validated['username'],
-                'password' => $validated['password'],
-            ], now()->addMinutes(60)); // Adjust session duration as needed
+            Cache::put($sessionId, $sshAction, now()->addMinutes(60)); // Adjust session duration as needed
             $request->session()->put('sshSessionId', $sessionId);
-            broadcast(new SshOutput($sessionId, $ssh->exec('whoami'))); // Send initial output
+            $output = $sshAction->execute('whoami');
+            Log::info($output);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
@@ -59,19 +57,19 @@ class SSHController extends Controller
             'command' => 'required|string',
         ]);
 
-        $cacheKey = Cache::get($request->input('sessionId'));
-        if (!$cacheKey) {
+        $sshAction = Cache::get($request->input('sessionId'));
+        if (!$sshAction) {
             return response()->json(['error' => 'Invalid session'], 400);
         }
 
-        $this->sshAction->connectWithPassword(
-            $cacheKey['host'],
-            $cacheKey['port'],
-            $cacheKey['username'],
-            $cacheKey['password']
-        );
+        // $this->sshAction->connectWithPassword(
+        //     $cacheKey['host'],
+        //     $cacheKey['port'],
+        //     $cacheKey['username'],
+        //     $cacheKey['password']
+        // );
 
-        $output = $this->sshAction->execute($request->input('command'));
+        $output = $sshAction->execute($request->input('command'));
 
         broadcast(new SshOutput($request->input('sessionId'), $output));
 

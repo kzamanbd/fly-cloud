@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class DNSAction
 {
@@ -16,7 +17,7 @@ class DNSAction
     public function __construct()
     {
         $this->client = new Client(['base_uri' => 'https://api.cloudflare.com/client/v4/']);
-        $this->apiToken = env('CLOUDFLARE_API_TOKEN');
+        $this->apiToken = env('CLOUDFLARE_API_DNS_TOKEN', 'TWza6Zcr2i9GYg1xlqPwzIRDR7ChxWVfVnTAPDbd');
     }
 
     public function getRecords($zoneId)
@@ -70,12 +71,12 @@ class DNSAction
                 'headers' => [
                     'Authorization' => "Bearer {$this->apiToken}",
                     'Content-Type' => 'application/json',
-                    'X-Auth-Email' => env('CLOUDFLARE_EMAIL', 'kzamanbn@gmail.com'),
                 ],
             ]);
 
             return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return [
                 'result' => [],
                 'error' => $e->getMessage(),

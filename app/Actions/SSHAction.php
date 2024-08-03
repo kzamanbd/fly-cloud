@@ -67,7 +67,7 @@ class SSHAction implements Serializable
             $this->password = $password;
             $this->isConnected = true;
         }
-        return $this->ssh;
+        return $this;
     }
 
     public function connectWithKey($host, $port, $username, $privateKeyPath)
@@ -84,7 +84,7 @@ class SSHAction implements Serializable
             $this->privateKeyPath = $privateKeyPath;
             $this->isConnected = true;
         }
-        return $this->ssh;
+        return $this;
     }
 
     public function execute($command)

@@ -23,7 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::post('ssh', [SSHController::class, 'connect'])->name('ssh.connect');
     Route::post('ssh/exec', [SSHController::class, 'execute'])->name('ssh.exec');
 
-    Route::get('dns/{zoneId?}', [DNSController::class, 'index'])->name('dns.index');
+    Route::get('dns', [DNSController::class, 'index'])->name('dns.index');
+    Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');
     Route::resources(['sites' => SiteController::class]);
 });
