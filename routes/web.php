@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::resources(['sites' => SiteController::class]);
 
     Route::get('magic-login', function () {
-        // implement your magic login logic here
+        return redirect('http://wordpress.test/wp-admin/admin-ajax.php?action=magic_login&user_login=zaman&token=V21SGR6VQDSG3UFW');
     })->name('magic-login');
 });
 
