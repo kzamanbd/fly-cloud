@@ -8,7 +8,7 @@
         {{-- favicon --}}
         <link rel="icon" href="{{ asset('images/favicon.svg') }}">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Fly DNS Manager') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
