@@ -18,7 +18,7 @@ class DNSAction
     public function __construct()
     {
         $this->client = new Client(['base_uri' => 'https://api.cloudflare.com/client/v4/']);
-        $this->apiToken = env('CLOUDFLARE_API_DNS_TOKEN', 'TWza6Zcr2i9GYg1xlqPwzIRDR7ChxWVfVnTAPDbd');
+        $this->apiToken = env('CLOUDFLARE_API_DNS_TOKEN');
     }
 
     public function getRecords($zoneId)
