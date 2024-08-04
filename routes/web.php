@@ -28,10 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::post('dns/{zoneId}/{recordId}', [DNSController::class, 'update'])->name('dns.update');
     Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteController::class]);
-
-    Route::get('magic-login', function () {
-        return redirect('http://wordpress.test/wp-admin/admin-ajax.php?action=fly_magic_login&user_login=zaman&token=V21SGR6VQDSG3UFW');
-    })->name('magic-login');
 });
 
 require __DIR__ . '/auth.php';

@@ -148,7 +148,9 @@ export default ({ auth, zones }: Props) => {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                             {isModal && (
-                                <form onSubmit={storeRecordAction} className="space-y-5 px-6 py-3">
+                                <form
+                                    onSubmit={storeRecordAction}
+                                    className="space-y-5 px-6 py-3 border-b">
                                     <p className="mt-1 text-sm text-gray-600">
                                         [name] points to [IPv4 address] and has its traffic proxied
                                         through Cloudflare.
@@ -426,12 +428,14 @@ export default ({ auth, zones }: Props) => {
                                                     {dateFormat(dns.modified_on).format('LLL')}
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => recordEditHandler(dns)}
-                                                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                                        Edit
-                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => recordEditHandler(dns)}
+                                                            className="btn btn-outline-success">
+                                                            Edit
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}

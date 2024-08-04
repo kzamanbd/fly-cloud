@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps, SiteRecord } from '@/types';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -124,7 +124,7 @@ export default ({ auth, sites }: Props) => {
                                             </div>
                                         </th>
                                         <th scope="col" className="px-6 py-3">
-                                            <span className="sr-only">Edit</span>
+                                            <span className="sr-only">Actions</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -140,18 +140,26 @@ export default ({ auth, sites }: Props) => {
                                             </th>
                                             <td className="px-6 py-4">{site.path}</td>
                                             <td className="px-6 py-4">
-                                                {dateFormat(site.created_at).format()}
+                                                {dateFormat(site.created_at).format('LLL')}
                                             </td>
                                             <td className="px-6 py-4">
-                                                {dateFormat(site.updated_at).format()}
+                                                {dateFormat(site.updated_at).format('LLL')}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <button
-                                                    type="button"
-                                                    onClick={siteEditHandler.bind(null, site)}
-                                                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                                    Edit
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={siteEditHandler.bind(null, site)}
+                                                        className="btn btn-outline-success">
+                                                        Edit
+                                                    </button>
+                                                    <a
+                                                        href={route('sites.show', site.id)}
+                                                        target="_blank"
+                                                        className="btn btn-outline-success">
+                                                        Login
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
