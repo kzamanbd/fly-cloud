@@ -18,11 +18,13 @@ export default ({ auth, sites }: Props) => {
     console.log(`[sites]`, sites);
 
     const nameInput = useRef<HTMLInputElement>(null);
+    const [siteId, setSiteId] = useState<number | null>(null);
 
     const {
         data: form,
         setData,
         post,
+        put,
         processing,
         reset,
         errors
@@ -33,6 +35,17 @@ export default ({ auth, sites }: Props) => {
 
     const addSiteRecordAction: FormEventHandler = (e) => {
         e.preventDefault();
+
+        if (siteId) {
+            put(route('sites.update', siteId), {
+                preserveScroll: true,
+                onSuccess: () => toggleModalHandler(),
+                onError: () => nameInput.current?.focus(),
+                onFinish: () => reset()
+            });
+
+            return;
+        }
 
         post(route('sites.store'), {
             preserveScroll: true,
@@ -46,6 +59,13 @@ export default ({ auth, sites }: Props) => {
         setIsModal((prev) => !prev);
 
         reset();
+    };
+
+    const siteEditHandler = (site: SiteRecord) => {
+        setSiteId(site.id);
+        form.name = site.name;
+        form.path = site.path;
+        toggleModalHandler();
     };
 
     return (
@@ -126,11 +146,12 @@ export default ({ auth, sites }: Props) => {
                                                 {dateFormat(site.updated_at).format()}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <a
-                                                    href="#"
+                                                <button
+                                                    type="button"
+                                                    onClick={siteEditHandler.bind(null, site)}
                                                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                                     Edit
-                                                </a>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -143,7 +164,7 @@ export default ({ auth, sites }: Props) => {
 
             <Modal show={isModal} onClose={toggleModalHandler}>
                 <form onSubmit={addSiteRecordAction} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">Add Site Record</h2>
+                    <h2 className="text-lg font-medium text-gray-900">Add Site</h2>
 
                     <p className="mt-1 text-sm text-gray-600">
                         Add a new site record to your account. This will allow you to manage DNS

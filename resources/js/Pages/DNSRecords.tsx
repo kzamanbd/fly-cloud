@@ -12,8 +12,6 @@ type Props = PageProps & {
 };
 
 export default ({ auth, zones }: Props) => {
-    console.log(`[zones]`, zones);
-
     const [records, setRecords] = useState<DNSRecord[]>([]);
 
     const [isModal, setIsModal] = useState(false);
@@ -34,11 +32,14 @@ export default ({ auth, zones }: Props) => {
     });
 
     const [recordId, setRecordId] = useState(0);
-
+    const [recordIsLoading, setRecordIsLoading] = useState(true);
     const params = new URLSearchParams(window.location.search);
 
     const [zoneId, setZoneId] = useState(params.get('zoneId') || '');
 
+    if (zones?.length && !zoneId) {
+        setZoneId(zones[0]?.id);
+    }
     const types = ['A', 'AAAA', 'CNAME', 'TXT'];
 
     const timeToLive = [
@@ -57,10 +58,13 @@ export default ({ auth, zones }: Props) => {
                 toast.error('Zone ID is required.');
                 return;
             }
+            setRecordIsLoading(true);
             const response = await window.axios.get(route('dns.records', zoneId));
             setRecords(response.data.result || ([] as DNSRecord[]));
         } catch (error) {
             console.error(error);
+        } finally {
+            setRecordIsLoading(false);
         }
     };
 
@@ -80,7 +84,19 @@ export default ({ auth, zones }: Props) => {
         if (recordId) {
             return post(route('dns.update', [zoneId, recordId]), {
                 preserveScroll: true,
-                onSuccess: () => toggleModal()
+                onSuccess: () => {
+                    toggleModal();
+                    const updatedRecords = records.map((record) => {
+                        if (record.id === recordId) {
+                            return {
+                                ...record,
+                                ...form
+                            };
+                        }
+                        return record;
+                    });
+                    setRecords(updatedRecords);
+                }
             });
         }
 
@@ -90,15 +106,17 @@ export default ({ auth, zones }: Props) => {
         });
     };
 
-    const recordEditHandler = (record: DNSRecord) => {
+    const recordEditHandler = async (record: DNSRecord) => {
         console.log(`[record]`, record);
-        setIsModal(true);
+
         setRecordId(record.id);
-        setData('name', record.name);
-        setData('type', record.type);
-        setData('content', record.content);
-        setData('proxied', record.proxied);
-        setData('ttl', record.ttl);
+        form.name = record.name;
+        form.type = record.type;
+        form.content = record.content;
+        form.proxied = record.proxied;
+        form.ttl = record.ttl;
+        setIsModal(true);
+        console.log(form);
     };
 
     const toggleModal = () => {
@@ -162,7 +180,6 @@ export default ({ auth, zones }: Props) => {
                                                 className="form-input"
                                                 value={form.name}
                                                 onChange={(e) => setData('name', e.target.value)}
-                                                required
                                             />
                                             <InputError message={errors.name} className="mt-2" />
                                         </div>
@@ -371,35 +388,55 @@ export default ({ auth, zones }: Props) => {
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="max-h-[calc(100vh-370px)] overflow-y-auto">
-                                    {records.map((dns: DNSRecord) => (
-                                        <tr
-                                            key={dns.id}
-                                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                            <th
-                                                scope="row"
-                                                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                {dns.name}
-                                            </th>
-                                            <td className="px-6 py-4">{dns.type}</td>
-                                            <td className="px-6 py-4">{dns.content}</td>
-                                            <td className="px-6 py-4">
-                                                {dateFormat(dns.created_on).format('LLL')}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {dateFormat(dns.modified_on).format('LLL')}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => recordEditHandler(dns)}
-                                                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
-                                                    Edit
-                                                </button>
+                                {recordIsLoading ? (
+                                    <tbody>
+                                        <tr>
+                                            <td className="px-6 py-4" colSpan={5}>
+                                                <div
+                                                    role="status"
+                                                    className="max-w-sm animate-pulse">
+                                                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                                                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                                                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                                                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                                                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                                                    <div className="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                                                    <span className="sr-only">Loading...</span>
+                                                </div>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
+                                    </tbody>
+                                ) : (
+                                    <tbody className="max-h-[calc(100vh-370px)] overflow-y-auto">
+                                        {records.map((dns: DNSRecord) => (
+                                            <tr
+                                                key={dns.id}
+                                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                                <th
+                                                    scope="row"
+                                                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                    {dns.name}
+                                                </th>
+                                                <td className="px-6 py-4">{dns.type}</td>
+                                                <td className="px-6 py-4">{dns.content}</td>
+                                                <td className="px-6 py-4">
+                                                    {dateFormat(dns.created_on).format('LLL')}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {dateFormat(dns.modified_on).format('LLL')}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => recordEditHandler(dns)}
+                                                        className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                )}
                             </table>
                         </div>
                     </div>
