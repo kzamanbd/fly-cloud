@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import { dateFormat } from '@/utils';
 import { toast } from 'react-toastify';
+import InputError from '@/Components/InputError';
 
 type Props = PageProps & {
     zones: any[];
@@ -25,21 +26,23 @@ export default ({ auth, zones }: Props) => {
         reset,
         errors
     } = useForm({
-        name: '@',
-        type: 'A',
-        content: '76.76.21.61',
-        proxied: false,
+        name: '',
+        type: '',
+        content: '',
+        proxied: true,
         ttl: 1
     });
+
+    const [recordId, setRecordId] = useState(0);
 
     const params = new URLSearchParams(window.location.search);
 
     const [zoneId, setZoneId] = useState(params.get('zoneId') || '');
 
-    const types = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'SRV', 'PTR', 'CAA'];
+    const types = ['A', 'AAAA', 'CNAME', 'TXT'];
 
     const timeToLive = [
-        { value: '1', label: '1 minute' },
+        { value: '1', label: 'Auto' },
         { value: '120', label: '2 minutes' },
         { value: '300', label: '5 minutes' },
         { value: '600', label: '10 minutes' },
@@ -74,10 +77,28 @@ export default ({ auth, zones }: Props) => {
             return;
         }
 
+        if (recordId) {
+            return post(route('dns.update', [zoneId, recordId]), {
+                preserveScroll: true,
+                onSuccess: () => toggleModal()
+            });
+        }
+
         post(route('dns.store', zoneId), {
             preserveScroll: true,
             onSuccess: () => toggleModal()
         });
+    };
+
+    const recordEditHandler = (record: DNSRecord) => {
+        console.log(`[record]`, record);
+        setIsModal(true);
+        setRecordId(record.id);
+        setData('name', record.name);
+        setData('type', record.type);
+        setData('content', record.content);
+        setData('proxied', record.proxied);
+        setData('ttl', record.ttl);
     };
 
     const toggleModal = () => {
@@ -131,9 +152,10 @@ export default ({ auth, zones }: Props) => {
                                                     </option>
                                                 ))}
                                             </select>
+                                            <InputError message={errors.type} className="mt-2" />
                                         </div>
                                         <div>
-                                            <label htmlFor="name">Name</label>
+                                            <label htmlFor="name">Name (required)</label>
                                             <input
                                                 id="name"
                                                 placeholder="Enter name"
@@ -142,9 +164,10 @@ export default ({ auth, zones }: Props) => {
                                                 onChange={(e) => setData('name', e.target.value)}
                                                 required
                                             />
+                                            <InputError message={errors.name} className="mt-2" />
                                         </div>
                                         <div className="col-span-2">
-                                            <label htmlFor="content">Content</label>
+                                            <label htmlFor="content">IPv4 address (required)</label>
                                             <div className="flex">
                                                 <input
                                                     id="content"
@@ -157,23 +180,26 @@ export default ({ auth, zones }: Props) => {
                                                     required
                                                 />
                                             </div>
+                                            <InputError message={errors.content} className="mt-2" />
                                         </div>
 
                                         <div className="flex flex-col justify-around items-center">
                                             <label htmlFor="proxied">Proxy Status</label>
-                                            <label className="relative h-6 w-12 m-0">
-                                                <input
-                                                    onChange={(e) => {
-                                                        setData('proxied', e.target.checked);
-                                                    }}
-                                                    checked={form.proxied}
-                                                    type="checkbox"
-                                                    className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
-                                                    id="custom_switch_checkbox2"
-                                                />
-                                                <span className="outline_checkbox bg-icon dark:border-white-dark dark:before:bg-white-dark block h-full rounded-full border-2 border-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-[#ebedf2] before:bg-[url('/images/close.svg')] before:bg-center before:bg-no-repeat before:transition-all before:duration-300 peer-checked:border-primary peer-checked:before:left-7 peer-checked:before:bg-primary peer-checked:before:bg-[url('/images/checked.svg')]"></span>
-                                            </label>
-                                            Proxied
+                                            <div className="flex items-center gap-2">
+                                                <label className="relative h-6 w-12 m-0">
+                                                    <input
+                                                        onChange={(e) => {
+                                                            setData('proxied', e.target.checked);
+                                                        }}
+                                                        checked={form.proxied}
+                                                        type="checkbox"
+                                                        className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
+                                                        id="custom_switch_checkbox2"
+                                                    />
+                                                    <span className="outline_checkbox bg-icon dark:border-white-dark dark:before:bg-white-dark block h-full rounded-full border-2 border-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-[#ebedf2] before:bg-[url('/images/close.svg')] before:bg-center before:bg-no-repeat before:transition-all before:duration-300 peer-checked:border-primary peer-checked:before:left-7 peer-checked:before:bg-primary peer-checked:before:bg-[url('/images/checked.svg')]"></span>
+                                                </label>
+                                                <span>{form.proxied ? 'Proxied' : 'DNS Only'}</span>
+                                            </div>
                                         </div>
                                         <div>
                                             <label>TTL</label>
@@ -185,9 +211,7 @@ export default ({ auth, zones }: Props) => {
                                                     onChange={(e) => {
                                                         setData('ttl', Number(e.target.value));
                                                     }}>
-                                                    <option defaultChecked defaultValue="Auto">
-                                                        Auto
-                                                    </option>
+                                                    <option hidden>Auto</option>
                                                     {timeToLive.map((ttl) => (
                                                         <option key={ttl.value} value={ttl.value}>
                                                             {ttl.label}
@@ -251,6 +275,8 @@ export default ({ auth, zones }: Props) => {
                                                                 x2="19.07"
                                                                 y2="4.93"></line>
                                                         </svg>
+                                                    ) : recordId ? (
+                                                        'Update'
                                                     ) : (
                                                         'Add'
                                                     )}
@@ -264,17 +290,11 @@ export default ({ auth, zones }: Props) => {
                             <div className="relative px-6 py-3 flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between">
                                 <div>
                                     <form className="w-auto min-w-64 mx-auto">
-                                        <label
-                                            htmlFor="countries"
-                                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                            Select an option
-                                        </label>
                                         <select
-                                            id="countries"
                                             onChange={(e) => setZoneId(e.target.value)}
                                             className="form-select"
                                             value={zoneId}>
-                                            <option hidden>Zone</option>
+                                            <option hidden>Select Zone</option>
                                             {zones.map((zone) => (
                                                 <option key={zone.id} value={zone.id}>
                                                     {zone.name}
@@ -370,11 +390,12 @@ export default ({ auth, zones }: Props) => {
                                                 {dateFormat(dns.modified_on).format('LLL')}
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <a
-                                                    href="#"
+                                                <button
+                                                    type="button"
+                                                    onClick={() => recordEditHandler(dns)}
                                                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                                     Edit
-                                                </a>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

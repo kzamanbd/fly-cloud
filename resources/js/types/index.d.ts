@@ -17,6 +17,7 @@ export interface DNSRecord {
     type: string;
     content: string;
     ttl: number;
+    proxied: boolean;
     priority: number;
     created_on: string;
     modified_on: string;

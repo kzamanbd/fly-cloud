@@ -4,7 +4,6 @@ use App\Http\Controllers\DNSController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SSHController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,6 +25,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('dns', [DNSController::class, 'index'])->name('dns.index');
     Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');
+    Route::post('dns/{zoneId}/{recordId}', [DNSController::class, 'update'])->name('dns.update');
     Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteController::class]);
 });

@@ -35,7 +35,7 @@ class DNSController extends Controller
             'type' => 'required|string',
             'name' => 'required|string',
             'content' => 'required|string',
-            'ttl' => 'required|numeric',
+            'ttl' => 'required',
             'proxied' => 'required|boolean',
         ]);
 
@@ -58,7 +58,7 @@ class DNSController extends Controller
             'type' => 'required|string',
             'name' => 'required|string',
             'content' => 'required|string',
-            'ttl' => 'required|string',
+            'ttl' => 'required',
             'proxied' => 'required|boolean',
         ]);
 
