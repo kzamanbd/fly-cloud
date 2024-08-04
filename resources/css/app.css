@@ -178,6 +178,12 @@
     .dropdown-btn.active {
         @apply text-primary dark:text-primary;
     }
+    .before-bg-close {
+        @apply before:bg-[url('../../public/images/close.svg')];
+    }
+    .peer-checked-before-bg {
+        @apply peer-checked:before:bg-[url('../../public/images/checked.svg')];
+    }
 }
 @tailwind utilities;
 

@@ -215,7 +215,7 @@ export default ({ auth, zones }: Props) => {
                                                         className="custom_switch peer absolute z-10 h-full w-full cursor-pointer opacity-0"
                                                         id="custom_switch_checkbox2"
                                                     />
-                                                    <span className="outline_checkbox bg-icon dark:border-white-dark dark:before:bg-white-dark block h-full rounded-full border-2 border-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-[#ebedf2] before:bg-[url('/images/close.svg')] before:bg-center before:bg-no-repeat before:transition-all before:duration-300 peer-checked:border-primary peer-checked:before:left-7 peer-checked:before:bg-primary peer-checked:before:bg-[url('/images/checked.svg')]"></span>
+                                                    <span className="outline_checkbox bg-icon dark:border-white-dark dark:before:bg-white-dark block h-full rounded-full border-2 border-[#ebedf2] before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-[#ebedf2] before-bg-close before:bg-center before:bg-no-repeat before:transition-all before:duration-300 peer-checked:border-primary peer-checked:before:left-7 peer-checked:before:bg-primary peer-checked-before-bg"></span>
                                                 </label>
                                                 <span>{form.proxied ? 'Proxied' : 'DNS Only'}</span>
                                             </div>
