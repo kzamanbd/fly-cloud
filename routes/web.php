@@ -28,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::post('dns/{zoneId}/{recordId}', [DNSController::class, 'update'])->name('dns.update');
     Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteController::class]);
+
+    Route::get('magic-login', function () {
+        // implement your magic login logic here
+    })->name('magic-login');
 });
 
 require __DIR__ . '/auth.php';

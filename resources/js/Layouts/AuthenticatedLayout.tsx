@@ -60,6 +60,13 @@ export default function Authenticated({
                                 <NavLink href={route('ssh')} active={route().current('ssh')}>
                                     SSH
                                 </NavLink>
+
+                                <NavLink
+                                    href={route('magic-login')}
+                                    target="blank"
+                                    active={route().current('magic-login')}>
+                                    Magic Login
+                                </NavLink>
                             </div>
                         </div>
 
