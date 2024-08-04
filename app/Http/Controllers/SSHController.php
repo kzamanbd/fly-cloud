@@ -25,6 +25,10 @@ class SSHController extends Controller
             }
             $output = trim(mb_convert_encoding($sshAction->execute('whoami'), 'UTF-8'));
             $output .= '@' . trim(mb_convert_encoding($sshAction->execute('hostname'), 'UTF-8'));
+            if ($kickStartCommand = Cache::get($request->get('sessionId') . 'kickStartCommand')) {
+                $output .= PHP_EOL . 'Kick-start command: ' . $kickStartCommand;
+                $sshAction->execute($kickStartCommand);
+            }
             return inertia('SSHConnection', [
                 'output' => $output
             ]);
@@ -38,7 +42,8 @@ class SSHController extends Controller
             'host' => 'required|string',
             'port' => 'required|integer',
             'username' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'kickStartCommand' => 'sometimes|string'
         ]);
 
         $sshAction = new SSHAction();
@@ -54,8 +59,12 @@ class SSHController extends Controller
             $sessionId = uniqid('ssh_', true);
             Cache::put($sessionId, $sshAction, now()->addMinutes(60)); // Adjust session duration as needed
             $request->session()->put('sshSessionId', $sessionId);
-            $output = $sshAction->execute('whoami');
-            Log::info($output);
+
+            if (isset($validated['kickStartCommand'])) {
+                $sshAction->execute($validated['kickStartCommand']);
+                Cache::put($sessionId . 'kickStartCommand', $validated['kickStartCommand'], now()->addMinutes(60));
+            }
+
             return redirect(route('ssh', ['sessionId' => $sessionId]));
         } catch (\Exception $e) {
             Log::error($e->getMessage());

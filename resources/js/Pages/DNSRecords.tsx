@@ -107,8 +107,6 @@ export default ({ auth, zones }: Props) => {
     };
 
     const recordEditHandler = async (record: DNSRecord) => {
-        console.log(`[record]`, record);
-
         setRecordId(record.id);
         form.name = record.name;
         form.type = record.type;
@@ -116,7 +114,6 @@ export default ({ auth, zones }: Props) => {
         form.proxied = record.proxied;
         form.ttl = record.ttl;
         setIsModal(true);
-        console.log(form);
     };
 
     const toggleModal = () => {

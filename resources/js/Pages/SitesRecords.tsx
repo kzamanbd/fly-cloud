@@ -9,6 +9,7 @@ import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { FormEventHandler, useRef, useState } from 'react';
 import { dateFormat } from '@/utils';
+import SSHPrompt from '@/Components/SSHPrompt';
 
 type Props = PageProps & {
     sites: SiteRecord[];
@@ -19,6 +20,8 @@ export default ({ auth, sites }: Props) => {
 
     const nameInput = useRef<HTMLInputElement>(null);
     const [siteId, setSiteId] = useState<number | null>(null);
+
+    const [kickStartCommand, setKickStartCommand] = useState<string>('');
 
     const {
         data: form,
@@ -66,6 +69,16 @@ export default ({ auth, sites }: Props) => {
         form.name = site.name;
         form.path = site.path;
         toggleModalHandler();
+    };
+
+    const [isSshModal, setIsSshModal] = useState(false);
+
+    const sshModalHandler = (site: SiteRecord) => {
+        setIsSshModal((prev) => !prev);
+        if (site) {
+            console.log('SSH Connection', site);
+            setKickStartCommand(`cd ${site.path}`);
+        }
     };
 
     return (
@@ -153,12 +166,12 @@ export default ({ auth, sites }: Props) => {
                                                         className="btn btn-outline-success">
                                                         Edit
                                                     </button>
-                                                    <a
-                                                        href={route('sites.show', site.id)}
-                                                        target="_blank"
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => sshModalHandler(site)}
                                                         className="btn btn-outline-success">
-                                                        Login
-                                                    </a>
+                                                        SSH Connection
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -224,6 +237,13 @@ export default ({ auth, sites }: Props) => {
                     </div>
                 </form>
             </Modal>
+
+            <SSHPrompt
+                isOpen={isSshModal}
+                action={sshModalHandler}
+                maxWidth="lg"
+                kickStartCommand={kickStartCommand}
+            />
         </AuthenticatedLayout>
     );
 };

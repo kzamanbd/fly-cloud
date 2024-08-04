@@ -18,7 +18,7 @@ class SiteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'path' => 'required|url',
+            'path' => 'required|string'
         ]);
 
         Site::create($validated);
@@ -37,7 +37,7 @@ class SiteController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'path' => 'required|url',
+            'path' => 'required|string',
         ]);
 
         $site = Site::findOrFail($id);
