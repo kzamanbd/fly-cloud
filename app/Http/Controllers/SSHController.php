@@ -21,7 +21,7 @@ class SSHController extends Controller
         if ($request->get('sessionId')) {
             $sshAction = Cache::get($request->get('sessionId'));
             if (!$sshAction) {
-                return redirect(route('ssh'));
+                return redirect(route('ssh'))->with('error', 'Invalid session');
             }
             $output = trim(mb_convert_encoding($sshAction->execute('whoami'), 'UTF-8'));
             $output .= '@' . trim(mb_convert_encoding($sshAction->execute('hostname'), 'UTF-8'));
@@ -65,7 +65,7 @@ class SSHController extends Controller
                 Cache::put($sessionId . 'kickStartCommand', $validated['kickStartCommand'], now()->addMinutes(60));
             }
 
-            return redirect(route('ssh', ['sessionId' => $sessionId]));
+            return redirect(route('ssh', ['sessionId' => $sessionId]))->with('success', 'Connected to SSH');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }

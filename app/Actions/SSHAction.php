@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use Illuminate\Support\Facades\Log;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SSH2;
 use Serializable;
@@ -67,7 +68,7 @@ class SSHAction implements Serializable
             $this->password = $password;
             $this->isConnected = true;
         }
-        return $this;
+        return $this->ssh;
     }
 
     public function connectWithKey($host, $port, $username, $privateKeyPath)
@@ -84,7 +85,7 @@ class SSHAction implements Serializable
             $this->privateKeyPath = $privateKeyPath;
             $this->isConnected = true;
         }
-        return $this;
+        return $this->ssh;
     }
 
     public function execute($command)

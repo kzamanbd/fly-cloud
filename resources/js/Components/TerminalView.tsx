@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
+import { FitAddon } from '@xterm/addon-fit';
 
 type TerminalProps = {
     sessionId: string;
@@ -15,7 +16,10 @@ const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
 
     useEffect(() => {
         const instance = new Terminal();
+        const fitAddon = new FitAddon();
+        instance.loadAddon(fitAddon);
         instance.open(terminalRef.current);
+        fitAddon.fit();
         setTerm(instance);
         if (output) {
             instance.writeln('Welcome to the SSH Terminal');
@@ -40,9 +44,7 @@ const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
         return () => {
             if (sessionId) {
                 window.axios.get('/ssh/kill-session', {
-                    params: {
-                        sessionId
-                    }
+                    params: { sessionId }
                 });
                 instance.dispose();
                 echo.leave(`ssh-room-${sessionId}`);
