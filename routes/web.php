@@ -3,7 +3,7 @@
 use App\Http\Controllers\DNSController;
 use App\Http\Controllers\MagicLoginController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SiteController;
+use App\Http\Controllers\SiteRecordController;
 use App\Http\Controllers\SSHController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');
     Route::post('dns/{zoneId}/{recordId}', [DNSController::class, 'update'])->name('dns.update');
     Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
-    Route::resources(['sites' => SiteController::class]);
+    Route::resources(['sites' => SiteRecordController::class]);
     Route::get('magic-login', MagicLoginController::class)->name('magic-login');
 });
 

@@ -169,8 +169,8 @@ export default ({ auth, sites }: Props) => {
                                                     <button
                                                         type="button"
                                                         onClick={() => sshModalHandler(site)}
-                                                        className="btn btn-outline-success">
-                                                        SSH Connection
+                                                        className="btn btn-primary">
+                                                        SSH Terminal
                                                     </button>
                                                 </div>
                                             </td>
@@ -212,7 +212,7 @@ export default ({ auth, sites }: Props) => {
                     </div>
 
                     <div className="mt-6">
-                        <InputLabel htmlFor="site-path" value="Site URL" />
+                        <InputLabel htmlFor="site-path" value="Directory Path" />
 
                         <TextInput
                             id="site-path"
@@ -221,8 +221,7 @@ export default ({ auth, sites }: Props) => {
                             value={form.path}
                             onChange={(e) => setData('path', e.target.value)}
                             className="mt-1 block w-full"
-                            isFocused
-                            placeholder="Site Name"
+                            placeholder="Directory Path"
                         />
 
                         <InputError message={errors.path} className="mt-2" />

@@ -68,7 +68,7 @@
     }
     /* button */
     .btn {
-        @apply flex items-center justify-center rounded-md border px-4 py-2 text-center text-sm font-medium transition-all duration-300 ease-in-out dark:border-gray-700;
+        @apply flex items-center justify-center rounded-md h-max border px-4 py-2 text-center text-xs font-medium transition-all duration-300 ease-in-out dark:border-gray-700;
     }
     .btn-primary {
         @apply bg-primary text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300;
