@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\DNSAction;
-use App\Actions\SSHAction;
+use App\Http\Requests\DNSRecordRequest;
 use Exception;
-use Illuminate\Http\Request;
 
-class DNSController extends Controller
+class DNSRecordController extends Controller
 {
 
     public function __construct(protected DNSAction $dnsAction)
@@ -17,10 +16,14 @@ class DNSController extends Controller
 
     public function index()
     {
-        $zones = $this->dnsAction->getZones();
-        return inertia('DNSRecords', [
-            'zones' => $zones['result'],
-        ]);
+        try {
+            $zones = $this->dnsAction->getZones();
+            return inertia('DNSRecords', [
+                'zones' => $zones['result'],
+            ]);
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function getDNSRecords($zoneId)
@@ -29,18 +32,11 @@ class DNSController extends Controller
         return response()->json($records);
     }
 
-    public function store(Request $request, $zoneId)
+    public function store(DNSRecordRequest $request, $zoneId)
     {
-        $validated = $request->validate([
-            'type' => 'required|string',
-            'name' => 'required|string',
-            'content' => 'required|string',
-            'ttl' => 'required',
-            'proxied' => 'required|boolean',
-        ]);
-
         try {
-            $this->dnsAction->createRecord($zoneId, $validated);
+
+            $this->dnsAction->createRecord($zoneId, $request->formData());
 
             return redirect()->route('dns.index', [
                 'zoneId' => $zoneId
@@ -52,18 +48,10 @@ class DNSController extends Controller
         }
     }
 
-    public function update(Request $request, $zoneId, $recordId)
+    public function update(DNSRecordRequest $request, $zoneId, $recordId)
     {
-        $validated = $request->validate([
-            'type' => 'required|string',
-            'name' => 'required|string',
-            'content' => 'required|string',
-            'ttl' => 'required',
-            'proxied' => 'required|boolean',
-        ]);
-
         try {
-            $this->dnsAction->updateRecord($zoneId, $recordId, $validated);
+            $this->dnsAction->updateRecord($zoneId, $recordId, $request->formData());
 
             return redirect()->route(
                 'dns.index',

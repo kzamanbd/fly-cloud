@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\DNSController;
+use App\Http\Controllers\DNSRecordController;
 use App\Http\Controllers\MagicLoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteRecordController;
@@ -24,10 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::post('ssh/exec', [SSHController::class, 'execute'])->name('ssh.exec');
     Route::get('ssh/kill-session', [SSHController::class, 'killSession'])->name('ssh.kill');
 
-    Route::get('dns', [DNSController::class, 'index'])->name('dns.index');
-    Route::post('dns/{zoneId}', [DNSController::class, 'store'])->name('dns.store');
-    Route::post('dns/{zoneId}/{recordId}', [DNSController::class, 'update'])->name('dns.update');
-    Route::get('dns/records/{zoneId}', [DNSController::class, 'getDNSRecords'])->name('dns.records');
+    Route::get('dns', [DNSRecordController::class, 'index'])->name('dns.index');
+    Route::post('dns/{zoneId}', [DNSRecordController::class, 'store'])->name('dns.store');
+    Route::post('dns/{zoneId}/{recordId}', [DNSRecordController::class, 'update'])->name('dns.update');
+    Route::get('dns/records/{zoneId}', [DNSRecordController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteRecordController::class]);
     Route::get('magic-login', MagicLoginController::class)->name('magic-login');
 });
