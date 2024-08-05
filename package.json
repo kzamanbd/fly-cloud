@@ -3,7 +3,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc && vite build"
+        "build": "tsc && vite build",
+        "reverb": "php artisan reverb:start",
+        "start:dev": "concurrently \"npm run dev\" \"npm run reverb\""
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",
@@ -17,6 +19,7 @@
         "@xterm/xterm": "^5.5.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
+        "concurrently": "^8.2.2",
         "laravel-echo": "^1.16.1",
         "laravel-vite-plugin": "^1.0",
         "moment": "^2.30.1",
