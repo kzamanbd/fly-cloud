@@ -2,11 +2,10 @@
 
 namespace App\Actions;
 
-use App\Events\SshOutput;
+use App\Events\SshOutputEvent;
 use Illuminate\Support\Facades\Log;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SSH2;
-use Serializable;
 
 class SSHAction
 {
@@ -121,7 +120,7 @@ class SSHAction
             throw new \Exception('Not connected to SSH');
         }
         return $this->ssh->exec($command, function ($data) use ($sessionId) {
-            broadcast(new SshOutput($sessionId, $data));
+            broadcast(new SshOutputEvent($sessionId, $data));
         });
     }
 

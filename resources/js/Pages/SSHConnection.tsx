@@ -14,7 +14,7 @@ export default ({ auth, output }: SSHConnectionProps) => {
     console.log('[SSH Output]', output);
 
     let params = new URLSearchParams(window.location.search);
-    const sessionId = params.get('sessionId') || '';
+    const [sessionId, setSessionId] = useState('');
     const [command, setCommand] = useState('');
 
     useEffect(() => {
@@ -31,8 +31,11 @@ export default ({ auth, output }: SSHConnectionProps) => {
     };
 
     const [toggleModal, setToggleModal] = useState(false);
-    const toggleModalHandler = () => {
+    const toggleModalHandler = (value: any = {}) => {
         setToggleModal((prev) => !prev);
+        if (value.sessionId) {
+            setSessionId(value.sessionId);
+        }
     };
 
     return (
@@ -43,7 +46,7 @@ export default ({ auth, output }: SSHConnectionProps) => {
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
                         SSH Terminal
                     </h2>
-                    <PrimaryButton className="ms-4" onClick={toggleModalHandler}>
+                    <PrimaryButton className="ms-4" onClick={() => toggleModalHandler()}>
                         Add Connection
                     </PrimaryButton>
                 </div>
@@ -61,7 +64,7 @@ export default ({ auth, output }: SSHConnectionProps) => {
                     )}
                 </div>
             </div>
-            <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} maxWidth="md" />
+            <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} />
         </AuthenticatedLayout>
     );
 };

@@ -240,7 +240,6 @@ export default ({ auth, sites }: Props) => {
             <SSHPrompt
                 isOpen={isSshModal}
                 action={sshModalHandler}
-                maxWidth="lg"
                 kickStartCommand={kickStartCommand}
             />
         </AuthenticatedLayout>

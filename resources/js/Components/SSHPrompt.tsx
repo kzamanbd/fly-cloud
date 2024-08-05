@@ -1,10 +1,9 @@
-import { useForm } from '@inertiajs/react';
 import InputError from './InputError';
 import InputLabel from './InputLabel';
 import Modal from './Modal';
 import PrimaryButton from './PrimaryButton';
 import TextInput from './TextInput';
-import { FormEventHandler, useEffect } from 'react';
+import { FormEventHandler, useState } from 'react';
 import SecondaryButton from './SecondaryButton';
 
 type SSHModalProps = {
@@ -14,38 +13,47 @@ type SSHModalProps = {
     action: (data?: any) => void;
 };
 
-export default ({ isOpen, action, ...props }: SSHModalProps) => {
-    const { data, setData, post, processing, errors } = useForm({
-        name: 'Test Connection',
-        host: '203.188.245.58',
-        port: '8823',
-        username: 'root',
-        password: 'Monon$#Web.12',
-        privateKeyPath: '',
-        kickStartCommand: ''
+export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) => {
+    const [host, setHost] = useState('203.188.245.58');
+    const [port, setPort] = useState('8823');
+    const [username, setUsername] = useState('root');
+    const [password, setPassword] = useState('Monon$#Web.12');
+    const [name, setName] = useState('Test Connection');
+    const [kickStartCommand, setKickStartCommand] = useState(props.kickStartCommand);
+
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({
+        host: '',
+        port: '',
+        username: '',
+        password: '',
+        name: ''
     });
 
-    useEffect(() => {
-        if (props.kickStartCommand) {
-            setData('kickStartCommand', props.kickStartCommand);
-        }
-    }, [props.kickStartCommand]);
-
-    const submit: FormEventHandler = (e) => {
+    const submit: FormEventHandler = async (e) => {
         e.preventDefault();
 
-        post(route('ssh.connect'), {
-            onSuccess: (data) => {
-                action(data);
-            },
-            onError: (errors) => {
-                console.log('Errors', errors);
+        try {
+            setProcessing(true);
+            const response = await window.axios.post(route('ssh.connect'), {
+                host,
+                port,
+                username,
+                password,
+                kickStartCommand
+            });
+            action(response.data);
+        } catch (error: any) {
+            if (error.response.status === 422) {
+                setErrors(error.response?.data.errors);
             }
-        });
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
-        <Modal show={isOpen} onClose={action} {...props}>
+        <Modal show={isOpen} onClose={() => action()} maxWidth={maxWidth} {...props}>
             <form
                 className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-5"
                 onSubmit={submit}>
@@ -55,10 +63,10 @@ export default ({ isOpen, action, ...props }: SSHModalProps) => {
                     <TextInput
                         id="name"
                         name="name"
-                        value={data.name}
+                        value={name}
                         className="mt-1 block w-full"
                         autoComplete="name"
-                        onChange={(e) => setData('name', e.target.value)}
+                        onChange={(e) => setName(e.target.value)}
                         required
                     />
 
@@ -72,10 +80,10 @@ export default ({ isOpen, action, ...props }: SSHModalProps) => {
                         id="ssh-host"
                         type="text"
                         name="ssh-host"
-                        value={data.host}
+                        value={host}
                         className="mt-1 block w-full"
                         autoComplete="ssh-host"
-                        onChange={(e) => setData('host', e.target.value)}
+                        onChange={(e) => setHost(e.target.value)}
                         required
                     />
 
@@ -89,9 +97,9 @@ export default ({ isOpen, action, ...props }: SSHModalProps) => {
                         id="ssh-port"
                         type="text"
                         name="ssh-port"
-                        value={data.port}
+                        value={port}
                         className="mt-1 block w-full"
-                        onChange={(e) => setData('port', e.target.value)}
+                        onChange={(e) => setPort(e.target.value)}
                         required
                     />
 
@@ -105,9 +113,9 @@ export default ({ isOpen, action, ...props }: SSHModalProps) => {
                         id="ssh-user"
                         type="text"
                         name="ssh-user"
-                        value={data.username}
+                        value={username}
                         className="mt-1 block w-full"
-                        onChange={(e) => setData('username', e.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                     />
 
@@ -121,31 +129,15 @@ export default ({ isOpen, action, ...props }: SSHModalProps) => {
                         id="password"
                         type="password"
                         name="password"
-                        value={data.password}
+                        value={password}
                         className="mt-1 block w-full"
                         autoComplete="password"
-                        onChange={(e) => setData('password', e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
 
                     <InputError message={errors.password} className="mt-2" />
                 </div>
-
-                {props.kickStartCommand && (
-                    <div className="mt-4">
-                        <InputLabel htmlFor="kickStartCommand" value="Kick Start Command" />
-
-                        <TextInput
-                            id="kickStartCommand"
-                            type="text"
-                            name="kickStartCommand"
-                            value={data.kickStartCommand}
-                            className="mt-1 block w-full"
-                            autoComplete="kickStartCommand"
-                            readOnly
-                        />
-                    </div>
-                )}
 
                 <div className="flex items-center mt-4 gap-3 justify-end">
                     <SecondaryButton className="mr-2" onClick={action}>

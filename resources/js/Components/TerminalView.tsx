@@ -19,16 +19,13 @@ const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
         const fitAddon = new FitAddon();
         instance.loadAddon(fitAddon);
         instance.open(terminalRef.current);
-        fitAddon.fit();
         setTerm(instance);
-        if (output) {
-            instance.writeln('Welcome to the SSH Terminal');
-            instance.writeln(output);
-        }
-        instance.focus();
+        fitAddon.fit();
+
+        // ssh-shell is ready
 
         console.log('Session ID', sessionId);
-        echo.channel(`ssh-room-${sessionId}`).listen('SshOutput', (data: any) => {
+        echo.channel(`ssh-${sessionId}`).listen('SshOutputEvent', (data: any) => {
             console.log('SSH-Output', data.output);
             if (data.output) {
                 instance.write(data.output);
@@ -44,7 +41,7 @@ const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
                 });
                 instance.dispose();
                 echo.leave(`ssh-room-${sessionId}`);
-                setTerm(null)
+                setTerm(null);
             }
         };
     }, [sessionId]);

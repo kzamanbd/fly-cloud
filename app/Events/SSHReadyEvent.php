@@ -9,9 +9,8 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
-class SshOutput implements ShouldBroadcast
+class SSHReadyEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -32,7 +31,7 @@ class SshOutput implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('ssh-room-' . $this->sessionId),
+            new Channel('ssh-' . $this->sessionId),
         ];
     }
 

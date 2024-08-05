@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\SSHAction;
-use App\Events\SshOutput;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -52,18 +52,19 @@ class SSHController extends Controller
             );
 
             $sessionId = uniqid('ssh_', true);
+
             Cache::put($sessionId, $sshAction, now()->addMinutes(60)); // Adjust session duration as needed
-            $request->session()->put('sshSessionId', $sessionId);
 
-            if (isset($validated['kickStartCommand'])) {
-                $sshAction->execute($validated['kickStartCommand'], $sessionId);
-                Cache::put($sessionId . 'kickStartCommand', $validated['kickStartCommand'], now()->addMinutes(60));
-            }
-
-            return redirect(route('ssh', ['sessionId' => $sessionId]))->with('success', 'Connected to SSH');
+            return response()->json([
+                'sessionId' => $sessionId,
+                'message' => 'Connected SSH successfully'
+            ]);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
-            return back()->with('error', 'Failed to connect to SSH');
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
