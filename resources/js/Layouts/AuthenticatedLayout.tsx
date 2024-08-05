@@ -13,6 +13,7 @@ import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
+import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function Authenticated({
     user,
@@ -241,7 +242,7 @@ export default function Authenticated({
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={magicLogin}>Cancel</SecondaryButton>
 
-                        <DangerButton className="ms-3">Login</DangerButton>
+                        <PrimaryButton className="ms-3">Login</PrimaryButton>
                     </div>
                 </form>
             </Modal>

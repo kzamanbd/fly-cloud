@@ -61,7 +61,7 @@ export default ({ auth, output }: SSHConnectionProps) => {
                     )}
                 </div>
             </div>
-            <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} />
+            <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} maxWidth="md" />
         </AuthenticatedLayout>
     );
 };
