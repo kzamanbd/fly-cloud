@@ -15,20 +15,19 @@ class SshOutput implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $sessionId;
-    public $output;
+    public mixed $output;
+    public string $sessionId;
 
     public function __construct($sessionId, $output)
     {
+        $this->output = $output;
         $this->sessionId = $sessionId;
-        $this->output = mb_convert_encoding($output, 'UTF-8');
-        Log::info('Broadcasting SSH output', [$output]);
     }
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
@@ -37,8 +36,10 @@ class SshOutput implements ShouldBroadcast
         ];
     }
 
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
-        return ['output' => $this->output];
+        return [
+            'output' => $this->output
+        ];
     }
 }

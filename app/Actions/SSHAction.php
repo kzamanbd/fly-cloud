@@ -2,41 +2,48 @@
 
 namespace App\Actions;
 
+use App\Events\SshOutput;
 use Illuminate\Support\Facades\Log;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Net\SSH2;
 use Serializable;
 
-class SSHAction implements Serializable
+class SSHAction
 {
-    protected $ssh;
-    protected $isConnected = false;
-    protected $host;
-    protected $port;
-    protected $username;
+    protected SSH2 $ssh;
+
+    protected string $host;
+    protected int $port;
+
+    protected string $username;
+
     protected $password;
     protected $privateKeyPath;
+
+    protected bool $isConnected = false;
 
     public function __construct()
     {
         //
     }
 
-    public function serialize()
+    /**
+     * @return array
+     */
+    public function __serialize()
     {
-        return serialize([
+        return [
             'isConnected' => $this->isConnected,
             'host' => $this->host,
             'port' => $this->port,
             'username' => $this->username,
             'password' => $this->password,
             'privateKeyPath' => $this->privateKeyPath,
-        ]);
+        ];
     }
 
-    public function unserialize($data)
+    public function __unserialize($data)
     {
-        $data = unserialize($data);
         $this->isConnected = $data['isConnected'];
         $this->host = $data['host'];
         $this->port = $data['port'];
@@ -55,7 +62,15 @@ class SSHAction implements Serializable
         }
     }
 
-    public function connectWithPassword($host, $port, $username, $password)
+    /**
+     * @param $host
+     * @param $port
+     * @param $username
+     * @param $password
+     * @return SSH2
+     * @throws \Exception
+     */
+    public function connectWithPassword($host, $port, $username, $password): SSH2
     {
         if (!$this->isConnected) {
             $this->ssh = new SSH2($host, $port);
@@ -68,10 +83,19 @@ class SSHAction implements Serializable
             $this->password = $password;
             $this->isConnected = true;
         }
+        Log::info('Connected to SSH', [$this->ssh]);
         return $this->ssh;
     }
 
-    public function connectWithKey($host, $port, $username, $privateKeyPath)
+    /**
+     * @param $host
+     * @param $port
+     * @param $username
+     * @param $privateKeyPath
+     * @return SSH2
+     * @throws \Exception
+     */
+    public function connectWithKey($host, $port, $username, $privateKeyPath): SSH2
     {
         if (!$this->isConnected) {
             $this->ssh = new SSH2($host, $port);
@@ -88,16 +112,23 @@ class SSHAction implements Serializable
         return $this->ssh;
     }
 
-    public function execute($command)
+    /**
+     * @throws \Exception
+     */
+    public function execute($command, $sessionId): bool|string
     {
         if (!$this->isConnected) {
             throw new \Exception('Not connected to SSH');
         }
-        $output = $this->ssh->exec($command);
-        return mb_convert_encoding($output, 'UTF-8');
+        return $this->ssh->exec($command, function ($data) use ($sessionId) {
+            broadcast(new SshOutput($sessionId, $data));
+        });
     }
 
-    public function disconnect()
+    /**
+     * @return void
+     */
+    public function disconnect(): void
     {
         if ($this->isConnected) {
             $this->ssh->disconnect();

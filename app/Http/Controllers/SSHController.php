@@ -18,19 +18,14 @@ class SSHController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->get('sessionId')) {
-            $sshAction = Cache::get($request->get('sessionId'));
+        $sessionId = $request->get('sessionId');
+        if ($sessionId) {
+            $sshAction = Cache::get($sessionId);
             if (!$sshAction) {
                 return redirect(route('ssh'))->with('error', 'Invalid session');
             }
-            $output = trim(mb_convert_encoding($sshAction->execute('whoami'), 'UTF-8'));
-            $output .= '@' . trim(mb_convert_encoding($sshAction->execute('hostname'), 'UTF-8'));
-            if ($kickStartCommand = Cache::get($request->get('sessionId') . 'kickStartCommand')) {
-                $output .= PHP_EOL . 'Kick-start command: ' . $kickStartCommand;
-                $sshAction->execute($kickStartCommand);
-            }
             return inertia('SSHConnection', [
-                'output' => $output
+                'output' => ''
             ]);
         }
         return inertia('SSHConnection');
@@ -61,13 +56,14 @@ class SSHController extends Controller
             $request->session()->put('sshSessionId', $sessionId);
 
             if (isset($validated['kickStartCommand'])) {
-                $sshAction->execute($validated['kickStartCommand']);
+                $sshAction->execute($validated['kickStartCommand'], $sessionId);
                 Cache::put($sessionId . 'kickStartCommand', $validated['kickStartCommand'], now()->addMinutes(60));
             }
 
             return redirect(route('ssh', ['sessionId' => $sessionId]))->with('success', 'Connected to SSH');
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            return back()->with('error', 'Failed to connect to SSH');
         }
     }
 
@@ -83,14 +79,11 @@ class SSHController extends Controller
             return response()->json(['error' => 'Invalid session'], 400);
         }
 
-        $output = $sshAction->execute($request->input('command'));
-
-        broadcast(new SshOutput($request->input('sessionId'), $output));
+        $sshAction->execute($request->input('command'), $request->input('sessionId'));
 
         return response()->json([
             'success' => true,
             'sessionId' => $request->input('sessionId'),
-            'output' => $output
         ]);
     }
 
