@@ -227,10 +227,10 @@
     margin: 0 auto;
     height: calc(100vh - 207px);
 }
+.xterm-rows,
 .terminal-container .terminal {
     background-color: #000000;
     color: #fafafa;
-    padding: 2px;
     height: calc(100vh - 207px);
 }
 
