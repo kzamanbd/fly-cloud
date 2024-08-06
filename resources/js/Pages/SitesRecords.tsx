@@ -20,6 +20,7 @@ export default ({ auth, sites }: Props) => {
 
     const nameInput = useRef<HTMLInputElement>(null);
     const [siteId, setSiteId] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [kickStartCommand, setKickStartCommand] = useState<string>('');
 
@@ -57,6 +58,7 @@ export default ({ auth, sites }: Props) => {
             onFinish: () => reset()
         });
     };
+
     const [isModal, setIsModal] = useState(false);
     const toggleModalHandler = () => {
         setIsModal((prev) => !prev);
@@ -240,7 +242,8 @@ export default ({ auth, sites }: Props) => {
             <SSHPrompt
                 isOpen={isSshModal}
                 action={sshModalHandler}
-                kickStartCommand={kickStartCommand}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
             />
         </AuthenticatedLayout>
     );

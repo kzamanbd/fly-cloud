@@ -1,59 +1,41 @@
-import InputError from './InputError';
 import InputLabel from './InputLabel';
 import Modal from './Modal';
 import PrimaryButton from './PrimaryButton';
 import TextInput from './TextInput';
 import { FormEventHandler, useState } from 'react';
 import SecondaryButton from './SecondaryButton';
+import socket from '@/utils/socket';
 
 type SSHModalProps = {
     isOpen: boolean;
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     kickStartCommand?: string;
     action: (data?: any) => void;
+    setIsLoading: (loading: boolean) => void;
+    isLoading: boolean;
 };
 
-export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) => {
+export default ({ action, isLoading, maxWidth = 'md', ...props }: SSHModalProps) => {
     const [host, setHost] = useState('203.188.245.58');
     const [port, setPort] = useState('8823');
     const [username, setUsername] = useState('root');
     const [password, setPassword] = useState('Monon$#Web.12');
     const [name, setName] = useState('Test Connection');
-    const [kickStartCommand, setKickStartCommand] = useState(props.kickStartCommand);
-
-    const [processing, setProcessing] = useState(false);
-    const [errors, setErrors] = useState({
-        host: '',
-        port: '',
-        username: '',
-        password: '',
-        name: ''
-    });
 
     const submit: FormEventHandler = async (e) => {
         e.preventDefault();
-
-        try {
-            setProcessing(true);
-            const response = await window.axios.post(route('ssh.connect'), {
-                host,
-                port,
-                username,
-                password,
-                kickStartCommand
-            });
-            action(response.data);
-        } catch (error: any) {
-            if (error.response.status === 422) {
-                setErrors(error.response?.data.errors);
-            }
-        } finally {
-            setProcessing(false);
-        }
+        props.setIsLoading(true);
+        socket.emit('ssh', {
+            host: host,
+            port: port || 22,
+            username: username,
+            password: password // or private key
+        });
+        action();
     };
 
     return (
-        <Modal show={isOpen} onClose={() => action()} maxWidth={maxWidth} {...props}>
+        <Modal show={props.isOpen} onClose={() => action()} maxWidth={maxWidth} {...props}>
             <form
                 className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-5"
                 onSubmit={submit}>
@@ -69,8 +51,6 @@ export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) =>
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
-
-                    <InputError message={errors.name} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -86,8 +66,6 @@ export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) =>
                         onChange={(e) => setHost(e.target.value)}
                         required
                     />
-
-                    <InputError message={errors.host} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -102,8 +80,6 @@ export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) =>
                         onChange={(e) => setPort(e.target.value)}
                         required
                     />
-
-                    <InputError message={errors.port} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -118,8 +94,6 @@ export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) =>
                         onChange={(e) => setUsername(e.target.value)}
                         required
                     />
-
-                    <InputError message={errors.username} className="mt-2" />
                 </div>
 
                 <div className="mt-4">
@@ -135,15 +109,13 @@ export default ({ isOpen, action, maxWidth = 'md', ...props }: SSHModalProps) =>
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-
-                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div className="flex items-center mt-4 gap-3 justify-end">
                     <SecondaryButton className="mr-2" onClick={action}>
                         Cancel
                     </SecondaryButton>
-                    <PrimaryButton disabled={processing}>Connect</PrimaryButton>
+                    <PrimaryButton disabled={isLoading}>Connect</PrimaryButton>
                 </div>
             </form>
         </Modal>

@@ -6,35 +6,11 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TerminalView from '@/Components/TerminalView';
 import SSHPrompt from '@/Components/SSHPrompt';
 
-type SSHConnectionProps = PageProps & {
-    output: string;
-};
-
-export default ({ auth, output }: SSHConnectionProps) => {
-    console.log('[SSH Output]', output);
-
-    const [sessionId, setSessionId] = useState('');
-    const [command, setCommand] = useState('');
-
-    useEffect(() => {
-        if (command) {
-            if (command.endsWith('\r')) {
-                commandHandler(command.slice(0, -1).trim());
-                setCommand('');
-            }
-        }
-    }, [command]);
-
-    const commandHandler = (txt: string) => {
-        window.axios.post(route('ssh.exec'), { sessionId, command: txt });
-    };
-
+export default ({ auth }: PageProps) => {
     const [toggleModal, setToggleModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const toggleModalHandler = (value: any = {}) => {
         setToggleModal((prev) => !prev);
-        if (value.sessionId) {
-            setSessionId(value.sessionId);
-        }
     };
 
     return (
@@ -54,10 +30,15 @@ export default ({ auth, output }: SSHConnectionProps) => {
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto items-center sm:px-6 lg:px-8">
-                    {sessionId && <TerminalView sessionId={sessionId} setCommand={setCommand} />}
+                    <TerminalView isLoading={isLoading} />
                 </div>
             </div>
-            <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} />
+            <SSHPrompt
+                isOpen={toggleModal}
+                action={toggleModalHandler}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+            />
         </AuthenticatedLayout>
     );
 };

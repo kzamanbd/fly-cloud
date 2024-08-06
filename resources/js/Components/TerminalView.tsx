@@ -1,51 +1,46 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { FitAddon } from '@xterm/addon-fit';
+import socket from '@/utils/socket';
 
-type TerminalProps = {
-    sessionId: string;
-    setCommand: React.Dispatch<React.SetStateAction<string>>;
-};
-
-const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
+const TerminalView = ({ isLoading }: { isLoading: boolean }) => {
     const terminalRef = useRef(null) as any;
     const [term, setTerm] = useState<Terminal | null>(null);
-
-    const echo = window.Echo;
+    const [command, setCommand] = useState('');
 
     useEffect(() => {
-        const instance = new Terminal();
-        const fitAddon = new FitAddon();
-        instance.loadAddon(fitAddon);
-        instance.open(terminalRef.current);
-        setTerm(instance);
-        fitAddon.fit();
-
-        // ssh-shell is ready
-
-        console.log('Session ID', sessionId);
-        echo.channel(`ssh-${sessionId}`).listen('SshOutputEvent', (data: any) => {
-            console.log('SSH-Output', data.output);
-            if (data.output) {
-                instance.write(data.output);
-            } else if (data.error) {
-                instance.write(`Error: ${data.error}`);
+        socket.on('ssh-output', (data) => {
+            if (term) {
+                term.write(data);
+                console.log('SSH output:', data);
             }
         });
-
-        return () => {
-            if (sessionId) {
-                window.axios.get('/ssh/kill-session', {
-                    params: { sessionId }
-                });
-                instance.dispose();
-                echo.leave(`ssh-room-${sessionId}`);
-                setTerm(null);
+        socket.on('ssh-ready', () => {
+            console.log('SSH connection ready');
+            const instance = new Terminal({
+                cursorBlink: true
+            });
+            const fitAddon = new FitAddon();
+            instance.loadAddon(fitAddon);
+            if (terminalRef.current) {
+                instance.writeln('Welcome to the SSH Terminal');
+                instance.open(terminalRef.current);
+                fitAddon.fit();
             }
+            setTerm(instance);
+        });
+        socket.on('ssh-error', (err) => {
+            console.error('SSH Error:', err);
+        });
+        return () => {
+            socket.off('ssh-output');
+            socket.off('ssh-ready');
+            socket.off('ssh-error');
         };
-    }, [sessionId]);
+    }, [term]);
 
+    // handle terminal input data
     useEffect(() => {
         if (term) {
             term.onData((data: string) => {
@@ -61,11 +56,24 @@ const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
                         term.write(data);
                     }
                 }
-
                 setCommand((prev) => prev + data);
             });
         }
-    }, [term, sessionId]);
+    }, [term]);
+
+    // handle command submit event
+    useEffect(() => {
+        if (command) {
+            if (command === 'clear') {
+                // clear terminal
+            } else if (command.endsWith('\r')) {
+                // trim command and send to server
+                const commandString = command.slice(0, -1).trim();
+                socket.emit('ssh-input', commandString + '\n');
+                setCommand('');
+            }
+        }
+    }, [command]);
 
     return (
         <div className={`terminal ${!term && 'hidden'}`}>
