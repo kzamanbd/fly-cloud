@@ -5,7 +5,8 @@ import { FitAddon } from '@xterm/addon-fit';
 import socket from '@/utils/socket';
 
 const instanceXTerm = new Terminal({
-    cursorBlink: true
+    cursorBlink: true,
+    rows: 30
 });
 const fitAddon = new FitAddon();
 instanceXTerm.loadAddon(fitAddon);
@@ -96,15 +97,16 @@ const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
     }, [isLoading]);
 
     return (
-        <div>
-            <div className="terminal-header">
-                <div className="buttons">
-                    <span className="button close"></span>
-                    <span className="button minimize"></span>
-                    <span className="button maximize"></span>
+        <div className="bg-black text-white p-4 rounded-lg w-full font-mono">
+            <div className="flex justify-between items-center">
+                <div className="flex space-x-2 text-red-500">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
+                <p className="text-sm">bash</p>
             </div>
-            <div className="terminal-container">
+            <div className="mt-4">
                 <div className="w-full" ref={terminalRef}></div>
             </div>
         </div>
