@@ -187,13 +187,6 @@
 }
 @tailwind utilities;
 
-.terminal {
-    background: #1e1e1e;
-    border-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
 .terminal-header {
     background: #333;
     padding: 5px 10px;
@@ -226,21 +219,18 @@
     background: #27c93f;
 }
 
-.terminal-body {
-    padding-left: 10px;
-    padding-top: 10px;
-    color: #0f0;
-    font-family: 'Courier New', Courier, monospace;
-    white-space: pre-wrap;
-    overflow: hidden;
-    height: calc(100% - 30px); /* Ajustar altura para la cabecera */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Asegura que el contenido comience desde arriba */
-    align-items: flex-start; /* Alinea el contenido a la izquierda */
+.box {
+    display: block;
+    height: 100%;
 }
-
-.xterm-screen {
-    width: 100%;
+.terminal-container {
+    margin: 0 auto;
+    height: calc(100vh - 207px);
+}
+.terminal-container .terminal {
+    background-color: #000000;
+    color: #fafafa;
+    padding: 2px;
+    height: calc(100vh - 207px);
 }
 
