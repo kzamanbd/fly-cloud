@@ -1,16 +1,27 @@
 import { Client } from 'ssh2';
 import { logger } from './utils/logger';
+import type { Socket } from 'socket.io';
 
-export const socketConnection = (socket: any) => {
+export type ConnectionConfig = {
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    privateKey: string;
+    passphrase: string;
+    kickStartCommand?: string;
+};
+
+export const socketConnection = (socket: Socket) => {
     logger.info('Client connected', socket.id);
-
-    socket.on('ssh', ({ kickStartCommand, ...config }: any) => {
+    socket.on('ssh', ({ kickStartCommand, ...config }: ConnectionConfig) => {
         const client = new Client();
         logger.info('Client :: connecting...');
 
         const sshReady = () => {
             logger.info('Client :: ready');
             socket.emit('ssh-ready');
+            socket.emit('title', `ssh://${config.username}@${config.host}`);
             client.shell((err: any, stream: any) => {
                 if (err) {
                     socket.emit('ssh-error', err.message);
@@ -29,7 +40,7 @@ export const socketConnection = (socket: any) => {
 
                 socket.on('resize', (data: any) => {
                     stream.setWindow(data.rows, data.cols);
-                    logger.info(socket, `SOCKET RESIZE: ${JSON.stringify([data.rows, data.cols])}`);
+                    logger.info(`SOCKET RESIZE: ${JSON.stringify([data.rows, data.cols])}`);
                 });
 
                 stream.on('data', (data: any) => {
