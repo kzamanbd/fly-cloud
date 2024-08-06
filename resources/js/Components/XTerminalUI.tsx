@@ -97,7 +97,7 @@ const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
     }, [isLoading]);
 
     return (
-        <div className="bg-black text-white p-4 rounded-lg w-full font-mono">
+        <div className="bg-black text-white p-4 pr-2 rounded-lg w-full font-mono">
             <div className="flex justify-between items-center">
                 <div className="flex space-x-2 text-red-500">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
