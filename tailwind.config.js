@@ -1,7 +1,7 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 import colors from 'tailwindcss/colors';
-const primary = colors.sky;
+const primary = colors.purple;
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -28,7 +28,7 @@ export default {
                 },
                 primary: {
                     ...primary,
-                    DEFAULT: '#009EF7'
+                    DEFAULT: primary[500]
                 },
                 info: {
                     light: colors.blue[50],
