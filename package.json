@@ -11,8 +11,9 @@
         "build": "tsc && vite build",
         "ssh:build": "npm run build --workspace packages/ssh-server",
         "build:prod": "concurrently \"npm run build\" \"npm run ssh:build\"",
-        "ssh:server": "npm run dev --workspace packages/ssh-server",
-        "start:dev": "concurrently \"npm run dev\" \"npm run ssh:server\""
+        "ssh:dev": "npm run dev --workspace packages/ssh-server",
+        "ssh:start": "npm run start --workspace packages/ssh-server",
+        "start:dev": "concurrently \"npm run dev\" \"npm run ssh:dev\""
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",
