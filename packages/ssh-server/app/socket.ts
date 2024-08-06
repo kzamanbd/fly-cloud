@@ -14,6 +14,7 @@ export const socketConnection = (socket: any) => {
             client.shell((err: any, stream: any) => {
                 if (err) {
                     socket.emit('ssh-error', err.message);
+                    logger.error(`Shell error: ${err.message}`);
                     return;
                 }
 
@@ -40,12 +41,38 @@ export const socketConnection = (socket: any) => {
                 });
 
                 stream.stderr.on('data', (data: any) => {
-                    console.error(`STDERR: ${data}`);
+                    logger.error(`STDERR: ${data}`);
                 });
             });
         };
 
-        client.on('ready', sshReady).connect(config);
+        client.on('ready', sshReady);
+
+        client.on('error', (err: any) => {
+            logger.error(`SSH Connection error: ${err.message}`);
+            socket.emit('ssh-error', `SSH Connection error: ${err.message}`);
+        });
+
+        client.on('keyboard-interactive', (name, instructions, instructionsLang, prompts, finish) => {
+            logger.info('Keyboard-interactive authentication requested.');
+            // Handle keyboard-interactive authentication here
+            socket.emit('ssh-keyboard-interactive', { name, instructions, instructionsLang, prompts });
+            socket.on('ssh-keyboard-interactive-response', (responses: any) => {
+                finish(responses);
+            });
+        });
+
+        client.on('banner', (message: any) => {
+            logger.info(`SSH Banner: ${message}`);
+            socket.emit('ssh-banner', message);
+        });
+
+        client.on('close', () => {
+            logger.info('SSH connection closed');
+            socket.emit('ssh-close');
+        });
+
+        client.connect(config);
     });
 
     socket.on('disconnect', () => {

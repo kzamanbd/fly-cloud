@@ -1,36 +1,39 @@
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { FitAddon } from '@xterm/addon-fit';
 import socket from '@/utils/socket';
 
-const instance = new Terminal({
+const instanceXTerm = new Terminal({
     cursorBlink: true
 });
 const fitAddon = new FitAddon();
-instance.loadAddon(fitAddon);
+instanceXTerm.loadAddon(fitAddon);
 
 type TerminalProps = {
     isLoading: boolean;
+    setIsLoading?: Dispatch<SetStateAction<boolean>>;
 };
 
-const XTerminalUI = ({ isLoading }: TerminalProps) => {
+const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
     const terminalRef = useRef(null) as any;
-    const [term, setTerm] = useState<Terminal | null>(null);
+    const [xTerm, setXTerm] = useState<Terminal | null>(null);
 
-    function resizeScreen() {
+    const resizeScreen = () => {
         fitAddon.fit();
-        socket.emit('resize', { cols: term?.cols, rows: term?.rows });
-        console.log(`resize: ${JSON.stringify({ cols: term?.cols, rows: term?.rows })}`);
-    }
+        socket.emit('resize', { cols: xTerm?.cols, rows: xTerm?.rows });
+        console.log(`resize: ${JSON.stringify({ cols: xTerm?.cols, rows: xTerm?.rows })}`);
+    };
 
     useEffect(() => {
         if (terminalRef.current) {
-            instance.open(terminalRef.current);
-            instance.focus();
+            instanceXTerm.open(terminalRef.current);
+            instanceXTerm.focus();
             fitAddon.fit();
-            setTerm(instance);
-            instance.writeln('Welcome to XTerminal');
+            setXTerm(instanceXTerm);
+            instanceXTerm.writeln('Welcome to XTerminal');
+            instanceXTerm.write('\x1b[31m$ \x1b[0m');
+            resizeScreen();
         }
 
         window.addEventListener('resize', resizeScreen, false);
@@ -42,42 +45,58 @@ const XTerminalUI = ({ isLoading }: TerminalProps) => {
 
     useEffect(() => {
         socket.on('ssh-output', (data) => {
-            if (term) {
-                term.write(data);
-                console.log('SSH output:', data);
+            if (xTerm) {
+                xTerm.write(data);
             }
         });
 
         socket.on('ssh-ready', () => {
             console.log('SSH connection ready');
+            xTerm?.writeln('SSH connection ready');
+            if (setIsLoading) {
+                setIsLoading(false);
+            }
         });
 
         socket.on('ssh-error', (err) => {
             console.error('SSH Error:', err);
+            xTerm?.writeln(`Error: ${err}`);
+            if (setIsLoading) {
+                setIsLoading(false);
+            }
         });
 
-        if (term) {
-            term.onData((data: string) => {
+        if (xTerm) {
+            xTerm.onData((data: string) => {
                 socket.emit('ssh-input', data);
             });
         }
+
+        socket.on('title', (data: string) => {
+            document.title = data;
+        });
+
+        xTerm?.onTitleChange((title) => {
+            document.title = title;
+        });
 
         return () => {
             socket.off('ssh-output');
             socket.off('ssh-ready');
             socket.off('ssh-error');
+            socket.off('title');
         };
-    }, [term]);
+    }, [xTerm]);
 
     useEffect(() => {
-        if (isLoading && term) {
-            term.clear();
-            term.writeln('Connecting to server...');
+        if (isLoading && xTerm) {
+            xTerm.clear();
+            xTerm.writeln('Connecting to server...');
         }
     }, [isLoading]);
 
     return (
-        <div className={`${!term && 'hidden'}`}>
+        <div>
             <div className="terminal-header">
                 <div className="buttons">
                     <span className="button close"></span>
