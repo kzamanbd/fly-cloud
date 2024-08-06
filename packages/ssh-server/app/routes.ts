@@ -4,10 +4,9 @@ const router = express.Router();
 
 router.get('/', async (req: Request, res: Response) => {
     res.status(200).json({
-        title: 'Express Testing',
+        title: 'SSH/SFTP Terminal Server',
         message: 'The app is working properly!',
-        users: `${req.protocol}://${req.get('host')}${req.originalUrl}api/users`,
-        frontend: 'http://localhost:3000'
+        url: `${req.protocol}://${req.get('host')}${req.originalUrl}`
     });
 });
 

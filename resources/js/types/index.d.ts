@@ -26,6 +26,7 @@ export interface DNSRecord {
 export interface SiteRecord {
     id: number;
     name: string;
+    uuid: string;
     path: string;
     domain: string;
     created_at: string;

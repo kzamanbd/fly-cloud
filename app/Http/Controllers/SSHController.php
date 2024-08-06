@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\SSHAction;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -10,25 +11,17 @@ use Illuminate\Support\Facades\Log;
 
 class SSHController extends Controller
 {
-
-    public function __construct()
-    {
-        //
-    }
-
     public function index(Request $request)
     {
-        $sessionId = $request->get('sessionId');
-        if ($sessionId) {
-            $sshAction = Cache::get($sessionId);
-            if (!$sshAction) {
-                return redirect(route('ssh'))->with('error', 'Invalid session');
-            }
-            return inertia('SSHConnection', [
-                'output' => ''
-            ]);
+        $site = array();
+        $uuid = $request->get('uuid');
+        if ($uuid) {
+            $site = Site::where('uuid', $uuid)->first();
         }
-        return inertia('SSHConnection');
+
+        return inertia('SSHConnection', [
+            'site' => $site
+        ]);
     }
 
     public function connect(Request $request)
