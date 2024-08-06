@@ -23,8 +23,8 @@ class SiteRecordRequest extends FormRequest
     public function formData()
     {
         return [
-            'name' => $this->name,
-            'path' => $this->path
+            'name' => $this->input('name'),
+            'path' => $this->input('path'),
         ];
     }
 }

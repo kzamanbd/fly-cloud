@@ -237,6 +237,7 @@ export default ({ auth, zones }: Props) => {
 
                                                 <button
                                                     type="submit"
+                                                    disabled={processing}
                                                     className="flex items-center justify-center rounded-r-md border border-l-0 border-[#e0e6ed] bg-[#eee] px-3 font-semibold dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                                     {processing ? (
                                                         <svg

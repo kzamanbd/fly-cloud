@@ -25,11 +25,11 @@ class DNSRecordRequest extends FormRequest
     public function formData()
     {
         return [
-            'type' => $this->type,
-            'name' => $this->name,
-            'content' => $this->content,
-            'ttl' => $this->ttl,
-            'proxied' => $this->proxied,
+            'type' => $this->input('type'),
+            'name' => $this->input('name'),
+            'content' => $this->input('content'),
+            'ttl' => $this->input('ttl'),
+            'proxied' => $this->input('proxied'),
         ];
     }
 }
