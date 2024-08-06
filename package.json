@@ -9,6 +9,8 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
+        "ssh:build": "npm run build --workspace packages/ssh-server",
+        "build:prod": "concurrently \"npm run build\" \"npm run ssh:build\"",
         "ssh:server": "npm run dev --workspace packages/ssh-server",
         "start:dev": "concurrently \"npm run dev\" \"npm run ssh:server\""
     },
@@ -42,3 +44,4 @@
         "socket.io-client": "^4.7.5"
     }
 }
+
