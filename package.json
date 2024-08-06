@@ -1,11 +1,16 @@
 {
+    "name": "fly-dns-portal",
+    "version": "1.0.0",
     "private": true,
     "type": "module",
+    "workspaces": [
+        "packages/*"
+    ],
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "reverb": "php artisan reverb:start",
-        "start:dev": "concurrently \"npm run dev\" \"npm run reverb\""
+        "ssh:server": "npm run dev --workspace packages/ssh-server",
+        "start:dev": "concurrently \"npm run dev\" \"npm run ssh:server\""
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",
@@ -32,5 +37,8 @@
         "tailwindcss": "^3.2.1",
         "typescript": "^5.0.2",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "socket.io-client": "^4.7.5"
     }
 }
