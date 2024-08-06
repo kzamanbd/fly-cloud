@@ -6,9 +6,9 @@ import { FitAddon } from '@xterm/addon-fit';
 type TerminalProps = {
     sessionId: string;
     setCommand: React.Dispatch<React.SetStateAction<string>>;
-    output: string;
 };
-const TerminalView = ({ sessionId, setCommand, output }: TerminalProps) => {
+
+const TerminalView = ({ sessionId, setCommand }: TerminalProps) => {
     const terminalRef = useRef(null) as any;
     const [term, setTerm] = useState<Terminal | null>(null);
 

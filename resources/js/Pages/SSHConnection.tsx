@@ -13,7 +13,6 @@ type SSHConnectionProps = PageProps & {
 export default ({ auth, output }: SSHConnectionProps) => {
     console.log('[SSH Output]', output);
 
-    let params = new URLSearchParams(window.location.search);
     const [sessionId, setSessionId] = useState('');
     const [command, setCommand] = useState('');
 
@@ -55,13 +54,7 @@ export default ({ auth, output }: SSHConnectionProps) => {
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto items-center sm:px-6 lg:px-8">
-                    {sessionId && (
-                        <TerminalView
-                            output={output}
-                            sessionId={sessionId}
-                            setCommand={setCommand}
-                        />
-                    )}
+                    {sessionId && <TerminalView sessionId={sessionId} setCommand={setCommand} />}
                 </div>
             </div>
             <SSHPrompt isOpen={toggleModal} action={toggleModalHandler} />

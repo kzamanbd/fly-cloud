@@ -112,6 +112,17 @@ class SSHAction
     }
 
     /**
+     * @return SSH2
+     */
+
+    public function startInteractiveSession() : SSH2
+    {
+        $this->ssh->setTimeout(0);
+        return $this->ssh;
+    }
+
+
+    /**
      * @throws \Exception
      */
     public function execute($command, $sessionId): bool|string

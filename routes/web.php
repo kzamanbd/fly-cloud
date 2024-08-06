@@ -33,8 +33,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-
-Route::get('/broadcast', function () {
-    event(new \App\Events\SSHEvent());
-});
