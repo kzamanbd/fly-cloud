@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique()->index();
             $table->string('name');
             $table->string('path');
             $table->timestamps();
