@@ -27,9 +27,9 @@ export default ({ auth, sites }: Props) => {
         setData,
         post,
         put,
-        processing,
         reset,
-        errors
+        errors,
+        processing
     } = useForm({
         name: '',
         ip_address: '',
@@ -46,7 +46,7 @@ export default ({ auth, sites }: Props) => {
         if (siteId) {
             put(route('sites.update', siteId), {
                 preserveScroll: true,
-                onSuccess: () => toggleModalHandler(),
+                onSuccess: () => setIsModal(false),
                 onError: () => nameInput.current?.focus(),
                 onFinish: () => reset()
             });
@@ -56,7 +56,7 @@ export default ({ auth, sites }: Props) => {
 
         post(route('sites.store'), {
             preserveScroll: true,
-            onSuccess: () => toggleModalHandler(),
+            onSuccess: () => setIsModal(false),
             onError: () => nameInput.current?.focus(),
             onFinish: () => reset()
         });
@@ -82,9 +82,8 @@ export default ({ auth, sites }: Props) => {
     };
 
     const [isModal, setIsModal] = useState(false);
-    const toggleModalHandler = () => {
-        setIsModal((prev) => !prev);
-        // reset form data
+    const modalClose = () => {
+        setIsModal(false);
         reset();
     };
 
@@ -98,7 +97,7 @@ export default ({ auth, sites }: Props) => {
         setData('path', site.path);
         console.log(`[site]`, site);
 
-        toggleModalHandler();
+        setIsModal(true);
     };
 
     return (
@@ -107,7 +106,7 @@ export default ({ auth, sites }: Props) => {
             header={
                 <div className="flex justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">Sites</h2>
-                    <Button className="ms-4" onClick={toggleModalHandler} disabled={processing}>
+                    <Button className="ms-4" onClick={() => setIsModal(true)} disabled={processing}>
                         <IoAdd className="w-5 h-5" />
                         Add Site
                     </Button>
@@ -204,7 +203,7 @@ export default ({ auth, sites }: Props) => {
                 </div>
             </div>
 
-            <Modal title="Add Site" show={isModal} onClose={toggleModalHandler} maxWidth="lg">
+            <Modal title="Add Site" show={isModal} onClose={modalClose} maxWidth="lg">
                 <form onSubmit={siteRecordAction}>
                     <div>
                         <InputLabel htmlFor="site-name" value="Name" />
@@ -323,7 +322,7 @@ export default ({ auth, sites }: Props) => {
                         />
                     </div>
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={toggleModalHandler}>Cancel</SecondaryButton>
+                        <SecondaryButton onClick={modalClose}>Cancel</SecondaryButton>
 
                         <PrimaryButton className="ms-3" disabled={processing}>
                             Save & Close
