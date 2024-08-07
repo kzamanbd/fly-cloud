@@ -19,6 +19,7 @@ type TerminalProps = {
 const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
     const terminalRef = useRef(null) as any;
     const [xTerm, setXTerm] = useState<Terminal | null>(null);
+    const [terminalTitle, setTerminalTitle] = useState('XTerminal');
 
     const resizeScreen = () => {
         fitAddon.fit();
@@ -74,7 +75,7 @@ const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
         }
 
         socket.on('title', (data: string) => {
-            document.title = data;
+            setTerminalTitle(data);
         });
 
         xTerm?.onTitleChange((title) => {
@@ -97,16 +98,24 @@ const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
     }, [isLoading]);
 
     return (
-        <div className="bg-black text-white p-4 pr-2 rounded-lg w-full font-mono">
-            <div className="flex justify-between items-center">
-                <div className="flex space-x-2 text-red-500">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+        <div className="w-full">
+            <div className="w-full shadow-2xl subpixel-antialiased rounded h-full bg-black border-black mx-auto">
+                <div
+                    className="flex items-center h-6 rounded-t bg-gray-200 border-b border-gray-500 text-center text-black"
+                    id="headerTerminal">
+                    <div
+                        className="flex ml-2 items-center text-center border-red-900 bg-red-500 shadow-inner rounded-full w-3 h-3"
+                        id="closebtn"></div>
+                    <div
+                        className="ml-2 border-yellow-900 bg-yellow-500 shadow-inner rounded-full w-3 h-3"
+                        id="minbtn"></div>
+                    <div
+                        className="ml-2 border-green-900 bg-green-500 shadow-inner rounded-full w-3 h-3"
+                        id="maxbtn"></div>
+                    <div className="mx-auto pr-16" id="terminaltitle">
+                        <p className="text-center text-sm">{terminalTitle}</p>
+                    </div>
                 </div>
-                <p className="text-sm">bash</p>
-            </div>
-            <div className="mt-4">
                 <div className="w-full" ref={terminalRef}></div>
             </div>
         </div>

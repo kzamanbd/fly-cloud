@@ -9,7 +9,7 @@ export default function PrimaryButton({
     return (
         <button
             {...props}
-            className={`btn btn-primary uppercase ${disabled && 'opacity-25'} ` + className}
+            className={`btn btn-primary ${disabled && 'opacity-25'} ` + className}
             disabled={disabled}>
             {children}
         </button>
