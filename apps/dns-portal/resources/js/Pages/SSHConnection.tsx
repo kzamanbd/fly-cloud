@@ -125,6 +125,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
     };
 
     const closeModal = () => {
+        setIsModal(false);
         setInput('');
         setPassword('');
         setPrivateKey('');
@@ -152,7 +153,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                     <XTerminalUI isLoading={isLoading} setIsLoading={setIsLoading} />
                 </div>
             </div>
-            <Modal show={isModal} maxWidth="md">
+            <Modal show={isModal} maxWidth="md" onClose={closeModal}>
                 <form onSubmit={connectSSH}>
                     <div>
                         <InputLabel htmlFor="name" value="Host" />

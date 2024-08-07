@@ -89,12 +89,18 @@ export default ({ auth, sites }: Props) => {
 
     const siteEditHandler = (site: SiteRecord) => {
         setSiteId(site.uuid);
-        setData('name', site.name);
-        setData('ip_address', site.ip_address);
-        setData('port', site.port);
-        setData('username', site.username);
-        setData('domain', site.domain);
-        setData('path', site.path);
+
+        // update form data with site data to edit
+        setData((prevData) => ({
+            ...prevData,
+            name: site.name,
+            ip_address: site.ip_address,
+            port: site.port,
+            username: site.username,
+            domain: site.domain,
+            path: site.path
+        }));
+
         console.log(`[site]`, site);
 
         setIsModal(true);
