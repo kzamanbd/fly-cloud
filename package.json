@@ -7,9 +7,14 @@
     "scripts": {
         "graph": "nx graph",
         "build": "nx run-many --target=build --all",
-        "dev": "nx run-many --target=dev --all"
+        "dev": "nx run-many --target=dev --all",
+        "portal:dev": "nx dev dns-portal",
+        "ssh:dev": "nx dev ssh-server",
+        "app:dev": "concurrently \"pnpm portal:dev\" \"pnpm ssh:dev\"",
+        "ssh:start": "nx start ssh-server"
     },
     "devDependencies": {
+        "concurrently": "^8.2.2",
         "lerna": "8.1.8",
         "nx": "19.5.6",
         "typescript": "5.5.4"
