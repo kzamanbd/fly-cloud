@@ -109,7 +109,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                     </h2>
 
                     <PrimaryButton onClick={toggleModal} disabled={isLoading}>
-                        Connect
+                        Reconnect
                     </PrimaryButton>
                 </div>
             }>
@@ -121,7 +121,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                 </div>
             </div>
             <Modal show={isModal} maxWidth="md">
-                <form className="shadow-sm sm:rounded-lg p-5" onSubmit={connectSSH}>
+                <form onSubmit={connectSSH}>
                     <div>
                         <InputLabel htmlFor="name" value="Host" />
 

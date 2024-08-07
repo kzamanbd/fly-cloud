@@ -2,6 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
 
 export default function Modal({
+    title,
     children,
     show = false,
     maxWidth = '2xl',
@@ -12,6 +13,7 @@ export default function Modal({
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     closeable?: boolean;
     onClose?: CallableFunction;
+    title?: string | JSX.Element;
 }>) {
     const close = () => {
         if (closeable) {
@@ -53,7 +55,12 @@ export default function Modal({
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                     <DialogPanel
                         className={`mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:mx-auto ${maxWidthClass}`}>
-                        {children}
+                        {title && (
+                            <div className="px-4 py-2.5 bg-gray-50 text-lg font-semibold border-b">
+                                {title}
+                            </div>
+                        )}
+                        <div className="p-4">{children}</div>
                     </DialogPanel>
                 </TransitionChild>
             </Dialog>

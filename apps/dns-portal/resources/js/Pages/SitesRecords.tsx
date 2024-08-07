@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps, SiteRecord } from '@/types';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -10,6 +10,9 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import { FormEventHandler, useRef, useState } from 'react';
 import { dateFormat } from '@/utils';
 import Button from '@/Components/Button';
+import { CiLogin, CiEdit } from 'react-icons/ci';
+import { IoTerminal, IoAdd } from 'react-icons/io5';
+import TextAreaInput from '@/Components/TextAreaInput';
 
 type Props = PageProps & {
     sites: SiteRecord[];
@@ -31,7 +34,11 @@ export default ({ auth, sites }: Props) => {
         errors
     } = useForm({
         name: '',
-        path: ''
+        path: '',
+        host: '',
+        port: '22',
+        directory: '',
+        privateKey: ''
     });
 
     const addSiteRecordAction: FormEventHandler = (e) => {
@@ -77,6 +84,7 @@ export default ({ auth, sites }: Props) => {
                 <div className="flex justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">Sites</h2>
                     <Button className="ms-4" onClick={toggleModalHandler} disabled={processing}>
+                        <IoAdd className="w-5 h-5" />
                         Add Site
                     </Button>
                 </div>
@@ -147,15 +155,20 @@ export default ({ auth, sites }: Props) => {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     type="button"
-                                                    onClick={siteEditHandler.bind(null, site)}
-                                                    className="btn btn-outline-success">
-                                                    Edit
+                                                    onClick={siteEditHandler.bind(null, site)}>
+                                                    <CiEdit className="w-5 h-5" />
                                                 </button>
+
                                                 <a
                                                     href={route('ssh', { uuid: site.uuid })}
-                                                    target="_blank"
-                                                    className="btn btn-primary">
-                                                    Connect
+                                                    target="_blank">
+                                                    <CiLogin className="w-5 h-5" />
+                                                </a>
+
+                                                <a
+                                                    href={route('ssh', { uuid: site.uuid })}
+                                                    target="_blank">
+                                                    <IoTerminal className="w-5 h-5" />
                                                 </a>
                                             </div>
                                         </td>
@@ -167,17 +180,9 @@ export default ({ auth, sites }: Props) => {
                 </div>
             </div>
 
-            <Modal show={isModal} onClose={toggleModalHandler}>
-                <form onSubmit={addSiteRecordAction} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">Add Site</h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Add a new site record to your account. This will allow you to manage DNS
-                        records for the site. DNS records are used to map domain names to IP
-                        addresses.
-                    </p>
-
-                    <div className="mt-6">
+            <Modal title="Add Site" show={isModal} onClose={toggleModalHandler} maxWidth="lg">
+                <form onSubmit={addSiteRecordAction}>
+                    <div>
                         <InputLabel htmlFor="site-name" value="Name" />
 
                         <TextInput
@@ -195,6 +200,51 @@ export default ({ auth, sites }: Props) => {
                         <InputError message={errors.name} className="mt-2" />
                     </div>
 
+                    <div className="mt-4">
+                        <InputLabel htmlFor="ssh-host" value="Host" />
+
+                        <TextInput
+                            id="ssh-host"
+                            type="text"
+                            name="ssh-host"
+                            value={form.host}
+                            className="mt-1 block w-full"
+                            autoComplete="ssh-host"
+                            placeholder="13.214.214.72"
+                            onChange={(e) => setData('host', e.target.value)}
+                        />
+                    </div>
+
+                    <div className="mt-4">
+                        <InputLabel htmlFor="ssh-port" value="Port" />
+
+                        <TextInput
+                            id="ssh-port"
+                            type="text"
+                            name="ssh-port"
+                            value={form.port}
+                            className="mt-1 block w-full"
+                            onChange={(e) => setData('port', e.target.value)}
+                        />
+                    </div>
+
+                    <div className="mt-6">
+                        <InputLabel htmlFor="site-directory" value="Directory" />
+
+                        <TextInput
+                            id="site-directory"
+                            type="text"
+                            name="site-directory"
+                            value={form.directory}
+                            onChange={(e) => setData('directory', e.target.value)}
+                            className="mt-1 block w-full"
+                            placeholder="/var/www/html"
+                            required
+                        />
+
+                        <InputError message={errors.path} className="mt-2" />
+                    </div>
+
                     <div className="mt-6">
                         <InputLabel htmlFor="site-path" value="Path" />
 
@@ -205,7 +255,24 @@ export default ({ auth, sites }: Props) => {
                             value={form.path}
                             onChange={(e) => setData('path', e.target.value)}
                             className="mt-1 block w-full"
-                            placeholder="/var/www/html"
+                            placeholder="https://"
+                            required
+                        />
+
+                        <InputError message={errors.path} className="mt-2" />
+                    </div>
+
+                    <div className="mt-6">
+                        <InputLabel htmlFor="ssh-key" value="Private Key" />
+
+                        <TextAreaInput
+                            id="ssh-key"
+                            name="ssh-key"
+                            value={form.privateKey}
+                            onChange={(e) => setData('privateKey', e.target.value)}
+                            className="mt-1 block w-full"
+                            placeholder="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD..."
+                            required
                         />
 
                         <InputError message={errors.path} className="mt-2" />

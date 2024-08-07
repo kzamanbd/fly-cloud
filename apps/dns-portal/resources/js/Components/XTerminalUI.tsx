@@ -116,7 +116,7 @@ const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
                         <p className="text-center text-sm">{terminalTitle}</p>
                     </div>
                 </div>
-                <div className="w-full" ref={terminalRef}></div>
+                <div className="w-full pl-4 pt-4" ref={terminalRef}></div>
             </div>
         </div>
     );
