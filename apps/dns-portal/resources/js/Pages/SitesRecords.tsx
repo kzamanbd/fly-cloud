@@ -34,10 +34,10 @@ export default ({ auth, sites }: Props) => {
         errors
     } = useForm({
         name: '',
-        path: '',
         host: '',
         port: '22',
-        directory: '',
+        domain: '',
+        path: '',
         privateKey: ''
     });
 
@@ -61,6 +61,25 @@ export default ({ auth, sites }: Props) => {
             onError: () => nameInput.current?.focus(),
             onFinish: () => reset()
         });
+    };
+
+    const handlePrivateKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            alert('Please select a file first');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            setData('privateKey', event.target?.result as string);
+        };
+
+        reader.onerror = function (event) {
+            console.error('Error reading file:', event.target?.error);
+        };
+
+        reader.readAsText(file);
     };
 
     const [isModal, setIsModal] = useState(false);
@@ -188,55 +207,52 @@ export default ({ auth, sites }: Props) => {
                         <TextInput
                             id="site-name"
                             type="text"
-                            name="site-name"
                             ref={nameInput}
                             value={form.name}
                             onChange={(e) => setData('name', e.target.value)}
                             className="mt-1 block w-full"
                             isFocused
-                            placeholder="Site Name"
+                            placeholder="Name"
                         />
 
                         <InputError message={errors.name} className="mt-2" />
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="ssh-host" value="Host" />
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div className="col-span-2">
+                            <InputLabel htmlFor="ssh-host" value="Host" />
 
-                        <TextInput
-                            id="ssh-host"
-                            type="text"
-                            name="ssh-host"
-                            value={form.host}
-                            className="mt-1 block w-full"
-                            autoComplete="ssh-host"
-                            placeholder="13.214.214.72"
-                            onChange={(e) => setData('host', e.target.value)}
-                        />
+                            <TextInput
+                                id="ssh-host"
+                                type="text"
+                                value={form.host}
+                                className="mt-1 block w-full"
+                                autoComplete="ssh-host"
+                                placeholder="13.214.214.72"
+                                onChange={(e) => setData('host', e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <InputLabel htmlFor="ssh-port" value="Port" />
+
+                            <TextInput
+                                id="ssh-port"
+                                type="text"
+                                value={form.port}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('port', e.target.value)}
+                            />
+                        </div>
                     </div>
 
                     <div className="mt-4">
-                        <InputLabel htmlFor="ssh-port" value="Port" />
+                        <InputLabel htmlFor="path" value="Directory" />
 
                         <TextInput
-                            id="ssh-port"
+                            id="path"
                             type="text"
-                            name="ssh-port"
-                            value={form.port}
-                            className="mt-1 block w-full"
-                            onChange={(e) => setData('port', e.target.value)}
-                        />
-                    </div>
-
-                    <div className="mt-6">
-                        <InputLabel htmlFor="site-directory" value="Directory" />
-
-                        <TextInput
-                            id="site-directory"
-                            type="text"
-                            name="site-directory"
-                            value={form.directory}
-                            onChange={(e) => setData('directory', e.target.value)}
+                            value={form.path}
+                            onChange={(e) => setData('path', e.target.value)}
                             className="mt-1 block w-full"
                             placeholder="/var/www/html"
                             required
@@ -244,40 +260,49 @@ export default ({ auth, sites }: Props) => {
 
                         <InputError message={errors.path} className="mt-2" />
                     </div>
-
-                    <div className="mt-6">
-                        <InputLabel htmlFor="site-path" value="Path" />
+                    <div className="mt-4">
+                        <InputLabel htmlFor="domain" value="Domain" />
 
                         <TextInput
-                            id="site-path"
+                            id="domain"
                             type="text"
-                            name="site-path"
-                            value={form.path}
-                            onChange={(e) => setData('path', e.target.value)}
+                            value={form.domain}
+                            onChange={(e) => setData('domain', e.target.value)}
                             className="mt-1 block w-full"
                             placeholder="https://"
                             required
                         />
 
-                        <InputError message={errors.path} className="mt-2" />
+                        <InputError message={errors.domain} className="mt-2" />
                     </div>
 
-                    <div className="mt-6">
-                        <InputLabel htmlFor="ssh-key" value="Private Key" />
+                    <div className="mt-4">
+                        <InputLabel htmlFor="privateKey" value="Private Key" />
 
                         <TextAreaInput
-                            id="ssh-key"
-                            name="ssh-key"
+                            id="privateKey"
                             value={form.privateKey}
                             onChange={(e) => setData('privateKey', e.target.value)}
                             className="mt-1 block w-full"
                             placeholder="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD..."
-                            required
                         />
 
-                        <InputError message={errors.path} className="mt-2" />
+                        <InputError message={errors.privateKey} className="mt-2" />
                     </div>
 
+                    <div className="text-center w-full my-2">or</div>
+                    <div>
+                        <label htmlFor="small-file-input" className="sr-only">
+                            Choose file
+                        </label>
+                        <input
+                            type="file"
+                            name="small-file-input"
+                            id="small-file-input"
+                            onChange={handlePrivateKey}
+                            className="block w-full border border-gray-200 shadow-sm rounded-lg text-sm focus:outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 file:bg-gray-50 file:border-0 file:me-4 file:py-2 file:px-4 dark:file:bg-neutral-700 dark:file:text-neutral-400"
+                        />
+                    </div>
                     <div className="mt-6 flex justify-end">
                         <SecondaryButton onClick={toggleModalHandler}>Cancel</SecondaryButton>
 
