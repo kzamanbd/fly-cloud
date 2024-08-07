@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('private_keys', function (Blueprint $table) {
             $table->id();
             $table->foreignId('site_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->text('private_key');
+            $table->string('name')->nullable();
+            $table->text('private_key')->nullable();
+            $table->text('public_key')->nullable();
             $table->timestamps();
         });
     }

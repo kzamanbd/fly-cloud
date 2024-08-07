@@ -16,10 +16,10 @@ return new class extends Migration
             $table->uuid('uuid')->unique()->index();
             $table->string('name')->nullable();
             $table->string('username')->nullable();
-            $table->string('ip_address')->unique()->nullable();
-            $table->string('port')->unique()->nullable();
-            $table->string('domain')->unique()->nullable();
-            $table->string('path')->unique()->nullable();
+            $table->string('ip_address')->nullable();
+            $table->string('port')->nullable();
+            $table->string('domain')->nullable();
+            $table->string('path')->nullable();
             $table->string('php_version')->nullable();
             $table->string('database')->nullable();
             $table->timestamps();
