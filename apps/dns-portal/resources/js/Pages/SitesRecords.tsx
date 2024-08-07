@@ -19,8 +19,6 @@ type Props = PageProps & {
 };
 
 export default ({ auth, sites }: Props) => {
-    console.log(`[sites]`, sites);
-
     const nameInput = useRef<HTMLInputElement>(null);
     const [siteId, setSiteId] = useState<string | null>(null);
 
@@ -42,7 +40,7 @@ export default ({ auth, sites }: Props) => {
         privateKey: ''
     });
 
-    const addSiteRecordAction: FormEventHandler = (e) => {
+    const siteRecordAction: FormEventHandler = (e) => {
         e.preventDefault();
 
         if (siteId) {
@@ -86,18 +84,19 @@ export default ({ auth, sites }: Props) => {
     const [isModal, setIsModal] = useState(false);
     const toggleModalHandler = () => {
         setIsModal((prev) => !prev);
-
+        // reset form data
         reset();
     };
 
     const siteEditHandler = (site: SiteRecord) => {
         setSiteId(site.uuid);
-        form.name = site.name ?? '';
-        form.path = site.path ?? '';
-        form.ip_address = site.ip_address ?? '';
-        form.port = site.port ?? '';
-        form.username = site.username ?? '';
-        form.domain = site.domain ?? '';
+        setData('name', site.name);
+        setData('ip_address', site.ip_address);
+        setData('port', site.port);
+        setData('username', site.username);
+        setData('domain', site.domain);
+        setData('path', site.path);
+        console.log(`[site]`, site);
 
         toggleModalHandler();
     };
@@ -206,7 +205,7 @@ export default ({ auth, sites }: Props) => {
             </div>
 
             <Modal title="Add Site" show={isModal} onClose={toggleModalHandler} maxWidth="lg">
-                <form onSubmit={addSiteRecordAction}>
+                <form onSubmit={siteRecordAction}>
                     <div>
                         <InputLabel htmlFor="site-name" value="Name" />
 

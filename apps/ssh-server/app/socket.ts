@@ -83,7 +83,11 @@ export const socketConnection = (socket: Socket) => {
             socket.emit('ssh-close');
         });
 
-        client.connect(config);
+        try {
+            client.connect(config);
+        } catch (err: any) {
+            socket.emit('ssh-error', 'Connection error: ' + err.message);
+        }
     });
 
     socket.on('disconnect', () => {

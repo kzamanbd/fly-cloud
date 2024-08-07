@@ -35,7 +35,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
 
             if (site.private_keys?.length) {
                 const key = site.private_keys[0]?.private_key;
-                console.log('Connecting with Private Key');
+                console.log('Connecting with Private Key', key);
                 if (site.ip_address && site.port && site.username && key) {
                     connectionAction({
                         host: site.ip_address,
@@ -43,6 +43,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                         username: site.username,
                         key: key.toString()
                     });
+                    setInput(`${site.username}@${site.ip_address} -p ${site.port}`);
                 }
             }
         }
@@ -121,12 +122,13 @@ export default ({ auth, site }: SSHConnectionProps) => {
 
     const toggleModal = () => {
         setIsModal(!isModal);
-        if (!isModal) {
-            setInput('');
-            setPassword('');
-            setPrivateKey('');
-            setIsPrivateKey(false);
-        }
+    };
+
+    const closeModal = () => {
+        setInput('');
+        setPassword('');
+        setPrivateKey('');
+        setIsPrivateKey(false);
     };
 
     return (
@@ -237,7 +239,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                     </label>
 
                     <div className="flex items-center mt-4 gap-3 justify-end">
-                        <SecondaryButton className="mr-2" onClick={toggleModal}>
+                        <SecondaryButton className="mr-2" onClick={closeModal}>
                             Cancel
                         </SecondaryButton>
                         <PrimaryButton disabled={isLoading}>Connect</PrimaryButton>

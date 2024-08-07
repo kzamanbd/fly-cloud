@@ -22,12 +22,13 @@ class SiteRecordController extends Controller
         try {
             $site = Site::create($request->formData());
 
-            if ($request->has('privateKey')) {
+            if ($request->input('privateKey')) {
                 $name = $site->name . ' Private Key' ?? 'Private Key' . $site->id;
 
                 $site->privateKeys()->create([
                     'name' => $name,
-                    'private_key' => $request->input('privateKey'),
+                    'private_key' => encrypt($request->input('privateKey')),
+                    'public_key' => encrypt($request->input('publicKey'))
                 ]);
             }
             DB::commit();
@@ -36,6 +37,7 @@ class SiteRecordController extends Controller
                 ->with('success', 'Site created successfully.');
         } catch (Exception $e) {
             DB::rollBack();
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -48,11 +50,25 @@ class SiteRecordController extends Controller
 
     public function update(SiteRecordRequest $request, Site $site)
     {
+        DB::beginTransaction();
         try {
             $site->update($request->formData());
+
+            if ($request->input('privateKey')) {
+                $name = $site->name . ' Private Key' ?? 'Private Key' . $site->id;
+
+                $site->privateKeys()->create([
+                    'name' => $name,
+                    'private_key' => encrypt($request->input('privateKey')),
+                    'public_key' => encrypt($request->input('publicKey'))
+                ]);
+            }
+            DB::commit();
+
             return redirect()->route('sites.index')
-                ->with('success', 'Site updated successfully.');
+                ->with('success', 'Site successfully Updated.');
         } catch (Exception $e) {
+            DB::rollBack();
             return back()->with('error', $e->getMessage());
         }
     }

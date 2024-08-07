@@ -32,6 +32,6 @@ class Site extends Model
 
     public function privateKeys()
     {
-        return $this->hasMany(PrivateKey::class);
+        return $this->hasMany(PrivateKey::class)->orderBy('created_at', 'desc');
     }
 }
