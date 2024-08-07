@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::post('dns/{zoneId}/{recordId}', [DNSRecordController::class, 'update'])->name('dns.update');
     Route::get('dns/records/{zoneId}', [DNSRecordController::class, 'getDNSRecords'])->name('dns.records');
     Route::resources(['sites' => SiteRecordController::class]);
-    Route::get('magic-login', MagicLoginController::class)->name('magic-login');
+    Route::get('magic-login', MagicLoginController::class)->name('wp.login');
 });
 
 require __DIR__ . '/auth.php';

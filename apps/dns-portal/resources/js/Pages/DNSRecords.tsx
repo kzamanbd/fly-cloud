@@ -6,6 +6,11 @@ import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import { dateFormat } from '@/utils';
 import { toast } from 'react-toastify';
 import InputError from '@/Components/InputError';
+import { CiEdit, CiSearch } from 'react-icons/ci';
+import { HiDotsVertical } from 'react-icons/hi';
+import Button from '@/Components/Button';
+import { IoAdd } from 'react-icons/io5';
+import { VscLoading } from 'react-icons/vsc';
 
 type Props = PageProps & {
     zones: any[];
@@ -108,11 +113,14 @@ export default ({ auth, zones }: Props) => {
 
     const recordEditHandler = async (record: DNSRecord) => {
         setRecordId(record.id);
-        form.name = record.name;
-        form.type = record.type;
-        form.content = record.content;
-        form.proxied = record.proxied;
-        form.ttl = record.ttl;
+        setData((prev) => ({
+            ...prev,
+            name: record.name,
+            type: record.type,
+            content: record.content,
+            proxied: record.proxied,
+            ttl: record.ttl
+        }));
         setIsModal(true);
     };
 
@@ -133,16 +141,17 @@ export default ({ auth, zones }: Props) => {
                         </h2>
                         <p>Manage DNS records of your domain.</p>
                     </div>
-                    <PrimaryButton onClick={toggleModal} disabled={processing}>
-                        Add Record
-                    </PrimaryButton>
+                    <Button className="ms-4" onClick={toggleModal} disabled={processing}>
+                        <IoAdd className="size-5" />
+                        Add DNS Record
+                    </Button>
                 </div>
             }>
             <Head title="DNS Records" />
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white shadow-sm overflow-hidden">
+                    <div className="bg-white shadow-sm overflow-hidden rounded-lg">
                         {isModal && (
                             <form
                                 onSubmit={storeRecordAction}
@@ -178,6 +187,7 @@ export default ({ auth, zones }: Props) => {
                                             className="form-input"
                                             value={form.name}
                                             onChange={(e) => setData('name', e.target.value)}
+                                            required
                                         />
                                         <InputError message={errors.name} className="mt-2" />
                                     </div>
@@ -237,50 +247,7 @@ export default ({ auth, zones }: Props) => {
                                                 disabled={processing}
                                                 className="flex items-center justify-center rounded-r-md border border-l-0 border-[#e0e6ed] bg-[#eee] px-3 font-semibold dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                                 {processing ? (
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24px"
-                                                        height="24px"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="1.5"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="text-white-dark h-5 w-5 animate-spin">
-                                                        <line x1="12" y1="2" x2="12" y2="6"></line>
-                                                        <line
-                                                            x1="12"
-                                                            y1="18"
-                                                            x2="12"
-                                                            y2="22"></line>
-                                                        <line
-                                                            x1="4.93"
-                                                            y1="4.93"
-                                                            x2="7.76"
-                                                            y2="7.76"></line>
-                                                        <line
-                                                            x1="16.24"
-                                                            y1="16.24"
-                                                            x2="19.07"
-                                                            y2="19.07"></line>
-                                                        <line x1="2" y1="12" x2="6" y2="12"></line>
-                                                        <line
-                                                            x1="18"
-                                                            y1="12"
-                                                            x2="22"
-                                                            y2="12"></line>
-                                                        <line
-                                                            x1="4.93"
-                                                            y1="19.07"
-                                                            x2="7.76"
-                                                            y2="16.24"></line>
-                                                        <line
-                                                            x1="16.24"
-                                                            y1="7.76"
-                                                            x2="19.07"
-                                                            y2="4.93"></line>
-                                                    </svg>
+                                                    <VscLoading className="size-5 animate-spin" />
                                                 ) : recordId ? (
                                                     'Update'
                                                 ) : (
@@ -314,17 +281,7 @@ export default ({ auth, zones }: Props) => {
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-                                    <svg
-                                        className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                                        aria-hidden="true"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                            clipRule="evenodd"></path>
-                                    </svg>
+                                    <CiSearch className="size-5 text-gray-400" />
                                 </div>
                                 <input
                                     type="text"
@@ -348,33 +305,13 @@ export default ({ auth, zones }: Props) => {
                                         Content
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        <div className="flex items-center">
-                                            Created At
-                                            <svg
-                                                className="w-3 h-3 ms-1.5"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                            </svg>
-                                        </div>
+                                        Created At
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        <div className="flex items-center">
-                                            Modified At
-                                            <svg
-                                                className="w-3 h-3 ms-1.5"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                            </svg>
-                                        </div>
+                                        Modified At
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        <span className="sr-only">Edit</span>
+                                        <span className="sr-only">Actions</span>
                                     </th>
                                 </tr>
                             </thead>
@@ -417,10 +354,10 @@ export default ({ auth, zones }: Props) => {
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         type="button"
-                                                        onClick={() => recordEditHandler(dns)}
-                                                        className="btn btn-outline-success">
-                                                        Edit
+                                                        onClick={recordEditHandler.bind(null, dns)}>
+                                                        <CiEdit className="size-5" />
                                                     </button>
+                                                    <HiDotsVertical className="size-5 cursor-pointer" />
                                                 </div>
                                             </td>
                                         </tr>

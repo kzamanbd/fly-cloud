@@ -12,6 +12,7 @@ import { dateFormat } from '@/utils';
 import Button from '@/Components/Button';
 import { CiLogin, CiEdit } from 'react-icons/ci';
 import { IoTerminal, IoAdd } from 'react-icons/io5';
+import { HiDotsVertical } from 'react-icons/hi';
 import TextAreaInput from '@/Components/TextAreaInput';
 
 type Props = PageProps & {
@@ -100,9 +101,6 @@ export default ({ auth, sites }: Props) => {
             domain: site.domain,
             path: site.path
         }));
-
-        console.log(`[site]`, site);
-
         setIsModal(true);
     };
 
@@ -113,7 +111,7 @@ export default ({ auth, sites }: Props) => {
                 <div className="flex justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">Sites</h2>
                     <Button className="ms-4" onClick={() => setIsModal(true)} disabled={processing}>
-                        <IoAdd className="w-5 h-5" />
+                        <IoAdd className="size-5" />
                         Add Site
                     </Button>
                 </div>
@@ -122,7 +120,7 @@ export default ({ auth, sites }: Props) => {
 
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white shadow-sm overflow-hidden">
+                    <div className="bg-white shadow-sm overflow-hidden rounded-lg">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
@@ -130,33 +128,16 @@ export default ({ auth, sites }: Props) => {
                                         Name
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        Path
+                                        Host
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        <div className="flex items-center">
-                                            Created At
-                                            <svg
-                                                className="w-3 h-3 ms-1.5"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                            </svg>
-                                        </div>
+                                        Directory
                                     </th>
                                     <th scope="col" className="px-6 py-3">
-                                        <div className="flex items-center">
-                                            Updated At
-                                            <svg
-                                                className="w-3 h-3 ms-1.5"
-                                                aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                            </svg>
-                                        </div>
+                                        Created At
+                                    </th>
+                                    <th scope="col" className="px-6 py-3">
+                                        Updated At
                                     </th>
                                     <th scope="col" className="px-6 py-3">
                                         <span className="sr-only">Actions</span>
@@ -173,6 +154,7 @@ export default ({ auth, sites }: Props) => {
                                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                             {site.name}
                                         </th>
+                                        <td className="px-6 py-4">{site.ip_address}</td>
                                         <td className="px-6 py-4">{site.path}</td>
                                         <td className="px-6 py-4">
                                             {dateFormat(site.created_at).format('LLL')}
@@ -185,20 +167,23 @@ export default ({ auth, sites }: Props) => {
                                                 <button
                                                     type="button"
                                                     onClick={siteEditHandler.bind(null, site)}>
-                                                    <CiEdit className="w-5 h-5" />
+                                                    <CiEdit className="size-5" />
                                                 </button>
 
                                                 <a
-                                                    href={route('ssh', { uuid: site.uuid })}
+                                                    href={route('wp.login', {
+                                                        redirect: site.domain
+                                                    })}
                                                     target="_blank">
-                                                    <CiLogin className="w-5 h-5" />
+                                                    <CiLogin className="size-5" />
                                                 </a>
 
                                                 <a
                                                     href={route('ssh', { uuid: site.uuid })}
                                                     target="_blank">
-                                                    <IoTerminal className="w-5 h-5" />
+                                                    <IoTerminal className="size-5" />
                                                 </a>
+                                                <HiDotsVertical className="size-5 cursor-pointer" />
                                             </div>
                                         </td>
                                     </tr>
@@ -209,7 +194,7 @@ export default ({ auth, sites }: Props) => {
                 </div>
             </div>
 
-            <Modal title="Add Site" show={isModal} onClose={modalClose} maxWidth="lg">
+            <Modal title="Add Site" show={isModal} onClose={modalClose} maxWidth="xl">
                 <form onSubmit={siteRecordAction}>
                     <div>
                         <InputLabel htmlFor="site-name" value="Name" />
