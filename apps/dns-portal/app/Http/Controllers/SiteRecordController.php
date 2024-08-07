@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SiteRecordRequest;
 use App\Models\Site;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class SiteRecordController extends Controller
 {
@@ -17,12 +18,24 @@ class SiteRecordController extends Controller
 
     public function store(SiteRecordRequest $request)
     {
+        DB::beginTransaction();
         try {
-            Site::create($request->formData());
+            $site = Site::create($request->formData());
+
+            if ($request->has('privateKey')) {
+                $name = $site->name . ' Private Key' ?? 'Private Key' . $site->id;
+
+                $site->privateKeys()->create([
+                    'name' => $name,
+                    'private_key' => $request->input('privateKey'),
+                ]);
+            }
+            DB::commit();
+
             return redirect()->route('sites.index')
                 ->with('success', 'Site created successfully.');
         } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
+            DB::rollBack();
         }
     }
 

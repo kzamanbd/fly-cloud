@@ -23,14 +23,23 @@ export interface DNSRecord {
     modified_on: string;
 }
 
+export interface PrivateKey {
+    name: string;
+    private_key: string;
+}
+
 export interface SiteRecord {
     id: number;
     name: string;
     uuid: string;
     path: string;
+    ip_address: string;
+    port: string;
+    username: string;
     domain: string;
     created_at: string;
     updated_at: string;
     dns_records: DNSRecord[];
+    private_keys: PrivateKey[];
 }
 

@@ -28,13 +28,54 @@ export default ({ auth, site }: SSHConnectionProps) => {
     const hostRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
-        if (site.uuid) {
+        if (site?.uuid) {
             console.log('UUID for Site Detail', site);
             toast.success(`Successfully Redirected with UUID: ${site.uuid}, `);
-            setIsModal(true);
             hostRef.current?.focus();
+
+            if (site.private_keys?.length) {
+                const key = site.private_keys[0]?.private_key;
+                console.log('Connecting with Private Key');
+                if (site.ip_address && site.port && site.username && key) {
+                    connectionAction({
+                        host: site.ip_address,
+                        port: site.port,
+                        username: site.username,
+                        key: key.toString()
+                    });
+                }
+            }
         }
     }, []);
+
+    const connectionAction = ({
+        host,
+        port,
+        username,
+        key,
+        password
+    }: {
+        host: string;
+        port: string;
+        username: string;
+        key?: string;
+        password?: string;
+    }) => {
+        setIsLoading(true);
+        console.log('Connecting to SSH', { host, port, username, key, password });
+        if (!host || !port || !username || (!key && !password)) {
+            toast.error('Host, Port, and Username are required');
+            return;
+        }
+        socket.emit('ssh', {
+            host: host,
+            port: port || 22,
+            username: username,
+            [key ? 'privateKey' : 'password']: key ? key : password,
+            password: password, // or private key
+            [site.path ? 'kickStartCommand' : '']: `cd ${site.path}`
+        });
+    };
 
     const connectSSH = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,18 +96,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
             toast.error('Password required');
             return;
         }
-
-        setIsLoading(true);
-
-        socket.emit('ssh', {
-            host: host,
-            port: port || 22,
-            username: username,
-            [isPrivateKey ? 'privateKey' : 'password']: isPrivateKey ? privateKey : password,
-            password: password, // or private key
-            [site.path ? 'kickStartCommand' : '']: `cd ${site.path}`
-        });
-
+        connectionAction({ host, port, username, key: isPrivateKey ? privateKey : '', password });
         toggleModal();
     };
 

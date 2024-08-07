@@ -34,8 +34,9 @@ export default ({ auth, sites }: Props) => {
         errors
     } = useForm({
         name: '',
-        host: '',
+        ip_address: '',
         port: '22',
+        username: 'root',
         domain: '',
         path: '',
         privateKey: ''
@@ -91,8 +92,13 @@ export default ({ auth, sites }: Props) => {
 
     const siteEditHandler = (site: SiteRecord) => {
         setSiteId(site.uuid);
-        form.name = site.name;
-        form.path = site.path;
+        form.name = site.name ?? '';
+        form.path = site.path ?? '';
+        form.ip_address = site.ip_address ?? '';
+        form.port = site.port ?? '';
+        form.username = site.username ?? '';
+        form.domain = site.domain ?? '';
+
         toggleModalHandler();
     };
 
@@ -225,11 +231,11 @@ export default ({ auth, sites }: Props) => {
                             <TextInput
                                 id="ssh-host"
                                 type="text"
-                                value={form.host}
+                                value={form.ip_address}
                                 className="mt-1 block w-full"
                                 autoComplete="ssh-host"
                                 placeholder="13.214.214.72"
-                                onChange={(e) => setData('host', e.target.value)}
+                                onChange={(e) => setData('ip_address', e.target.value)}
                             />
                         </div>
                         <div>
@@ -245,21 +251,35 @@ export default ({ auth, sites }: Props) => {
                         </div>
                     </div>
 
-                    <div className="mt-4">
-                        <InputLabel htmlFor="path" value="Directory" />
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div className="col-span-2">
+                            <InputLabel htmlFor="path" value="Directory" />
 
-                        <TextInput
-                            id="path"
-                            type="text"
-                            value={form.path}
-                            onChange={(e) => setData('path', e.target.value)}
-                            className="mt-1 block w-full"
-                            placeholder="/var/www/html"
-                            required
-                        />
+                            <TextInput
+                                id="path"
+                                type="text"
+                                value={form.path}
+                                onChange={(e) => setData('path', e.target.value)}
+                                className="mt-1 block w-full"
+                                placeholder="/var/www/html"
+                                required
+                            />
 
-                        <InputError message={errors.path} className="mt-2" />
+                            <InputError message={errors.path} className="mt-2" />
+                        </div>
+                        <div>
+                            <InputLabel htmlFor="username" value="Username" />
+
+                            <TextInput
+                                id="username"
+                                type="text"
+                                value={form.username}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('username', e.target.value)}
+                            />
+                        </div>
                     </div>
+
                     <div className="mt-4">
                         <InputLabel htmlFor="domain" value="Domain" />
 

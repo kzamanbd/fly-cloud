@@ -24,7 +24,13 @@ class SiteRecordRequest extends FormRequest
     {
         return [
             'name' => $this->input('name'),
+            'username' => $this->input('username'),
+            'ip_address' => $this->input('ip_address'),
+            'port' => $this->input('port'),
+            'domain' => $this->input('domain'),
             'path' => $this->input('path'),
+            'php_version' => $this->input('php_version'),
+            'database' => $this->input('database')
         ];
     }
 }

@@ -10,7 +10,7 @@ class Site extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'path'];
+    protected $fillable = ['name', 'path', 'domain', 'username', 'port', 'ip_address', 'php_version', 'database'];
 
     public function getRouteKeyName()
     {
@@ -28,5 +28,10 @@ class Site extends Model
         self::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
         });
+    }
+
+    public function privateKeys()
+    {
+        return $this->hasMany(PrivateKey::class);
     }
 }
