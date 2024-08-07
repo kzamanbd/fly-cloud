@@ -1,4 +1,4 @@
-# 🧑‍💻 FlyWP DNS Portal 
+# 🧑‍💻 FlyWP DNS Portal
 
 This is a simple DNS portal for FlyWP that allows you to manage your DNS records for your FlyWP apps.
 
@@ -20,4 +20,4 @@ This is a simple DNS portal for FlyWP that allows you to manage your DNS records
 - `REVERB_HOST` - "localhost"
 - `REVERB_PORT` - 8080
 - `REVERB_SCHEME` - http or https
-- `CLOUDFLARE_API_DNS_TOKEN` - Cloudflare API Token (DNS Edit)
+- `CLOUDFLARE_DNS_TOKEN` - Cloudflare API Token (DNS Edit)
