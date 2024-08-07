@@ -17,7 +17,7 @@ type SSHConnectionProps = PageProps & {
 
 export default ({ auth, site }: SSHConnectionProps) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [input, setInput] = useState('root@203.188.245.58 -p 8823');
+    const [input, setInput] = useState('');
     const [isModal, setIsModal] = useState(false);
     const [password, setPassword] = useState('');
     const [isPrivateKey, setIsPrivateKey] = useState(false);

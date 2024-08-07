@@ -1,3 +1,5 @@
+@import 'react-toastify/dist/ReactToastify.css';
+
 @tailwind base;
 @tailwind components;
 @layer components {
@@ -183,6 +185,9 @@
     }
     .peer-checked-before-bg {
         @apply peer-checked:before:bg-[url('../../public/images/checked.svg')];
+    }
+    .react-tooltip {
+        @apply bg-gray-800 text-white rounded-md py-2 !important;
     }
 }
 @tailwind utilities;

@@ -1,19 +1,11 @@
-import { useState, PropsWithChildren, ReactNode, useEffect, useRef } from 'react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { useState, PropsWithChildren, ReactNode, useEffect } from 'react';
 import { User } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Modal from '@/Components/Modal';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import InputError from '@/Components/InputError';
-import SecondaryButton from '@/Components/SecondaryButton';
-import DangerButton from '@/Components/DangerButton';
-import PrimaryButton from '@/Components/PrimaryButton';
 
 export default function Authenticated({
     user,
@@ -32,32 +24,6 @@ export default function Authenticated({
             toast.error(notify.error);
         }
     }, [notify]);
-
-    const [showModal, setShowModal] = useState(false);
-
-    const pathInput = useRef<HTMLInputElement>(null);
-    const [path, setPath] = useState('');
-
-    const magicLogin = () => {
-        setShowModal((prev) => !prev);
-        console.log('Magic Login');
-    };
-
-    const submitLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await window.axios.get(route('magic-login'), {
-                params: { path }
-            });
-            console.log(response.data);
-            window.open(response.data.url, '_blank');
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setPath('');
-            setShowModal(false);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -93,12 +59,6 @@ export default function Authenticated({
                                 <NavLink href={route('ssh')} active={route().current('ssh')}>
                                     SSH
                                 </NavLink>
-                                <button
-                                    type="button"
-                                    onClick={magicLogin}
-                                    className="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300 ">
-                                    Magic Login
-                                </button>
                             </div>
                         </div>
 
@@ -212,40 +172,6 @@ export default function Authenticated({
 
             <main>{children}</main>
             <ToastContainer />
-
-            <Modal show={showModal} onClose={magicLogin}>
-                <form onSubmit={submitLogin} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        Add your path to login with magic link
-                    </h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Enter the path you want to login with magic link to your account.
-                    </p>
-
-                    <div className="mt-6">
-                        <InputLabel htmlFor="path" value="Path" />
-
-                        <TextInput
-                            id="path"
-                            type="text"
-                            name="path"
-                            ref={pathInput}
-                            value={path}
-                            onChange={(e) => setPath(e.target.value)}
-                            className="mt-1 block w-3/4"
-                            isFocused
-                            placeholder="Path"
-                        />
-                    </div>
-
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={magicLogin}>Cancel</SecondaryButton>
-
-                        <PrimaryButton className="ms-3">Login</PrimaryButton>
-                    </div>
-                </form>
-            </Modal>
         </div>
     );
 }

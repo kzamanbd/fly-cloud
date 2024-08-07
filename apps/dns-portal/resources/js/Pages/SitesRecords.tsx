@@ -14,6 +14,7 @@ import { CiLogin, CiEdit } from 'react-icons/ci';
 import { IoTerminal, IoAdd } from 'react-icons/io5';
 import { HiDotsVertical } from 'react-icons/hi';
 import TextAreaInput from '@/Components/TextAreaInput';
+import { Tooltip } from 'react-tooltip';
 
 type Props = PageProps & {
     sites: SiteRecord[];
@@ -166,6 +167,7 @@ export default ({ auth, sites }: Props) => {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     type="button"
+                                                    data-tooltip-id="edit-action"
                                                     onClick={siteEditHandler.bind(null, site)}>
                                                     <CiEdit className="size-5" />
                                                 </button>
@@ -174,17 +176,32 @@ export default ({ auth, sites }: Props) => {
                                                     href={route('wp.login', {
                                                         redirect: site.domain
                                                     })}
+                                                    data-tooltip-id="wp-login"
                                                     target="_blank">
                                                     <CiLogin className="size-5" />
                                                 </a>
 
                                                 <a
                                                     href={route('ssh', { uuid: site.uuid })}
+                                                    data-tooltip-id="ssh-connect"
                                                     target="_blank">
                                                     <IoTerminal className="size-5" />
                                                 </a>
-                                                <HiDotsVertical className="size-5 cursor-pointer" />
+                                                <HiDotsVertical
+                                                    data-tooltip-id="site-actions"
+                                                    className="size-5 cursor-pointer"
+                                                />
                                             </div>
+                                            <Tooltip id="site-actions" content="Site Actions" />
+                                            <Tooltip
+                                                id="wp-login"
+                                                content="Login to WordPress Admin"
+                                            />
+                                            <Tooltip
+                                                id="ssh-connect"
+                                                content="Connect to SSH Terminal"
+                                            />
+                                            <Tooltip id="edit-action" content="Edit Site" />
                                         </td>
                                     </tr>
                                 ))}
