@@ -56,7 +56,7 @@ export default function Modal({
                     <DialogPanel
                         className={`mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:mx-auto ${maxWidthClass}`}>
                         {title && (
-                            <div className="px-4 py-2.5 bg-[#E0E6ED] text-lg font-semibold border-b">
+                            <div className="px-4 py-2.5 bg-gray-50/50 text-lg font-semibold border-b">
                                 {title}
                             </div>
                         )}
