@@ -22,6 +22,7 @@ class SiteFactory extends Factory
             'ip_address' => $this->faker->ipv4,
             'port' => $this->faker->numberBetween(1, 65535),
             'username' => $this->faker->userName,
+            'path' => '/var/www/' . $this->faker->userName
         ];
     }
 }
