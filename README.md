@@ -2,15 +2,9 @@
 
 This is a simple DNS portal for FlyWP that allows you to manage your DNS records for your FlyWP apps.
 
-## Installation Node Dependencies and Build
-
-1. Clone the repository
-2. `pnpm install`
-3. `pnpm run build`
-
 ## Installation and Setup Laravel App Running
 
-1. After completing the above steps, you can now setup the Laravel app
+1. Clone the repository
 2. Change into the working directory
 3. `cd apps/dns-portal`
 4. Install composer dependencies
@@ -24,6 +18,13 @@ This is a simple DNS portal for FlyWP that allows you to manage your DNS records
 12. Run the server
 13. `php artisan serve`
 14. Visit the site at `http://localhost:8000`
+
+## Installation Node Dependencies and Build
+
+1. After completing the above steps, you can now build the frontend assets by following the steps below.
+2. Change into the working directory if you are not already in the `root` directory.
+3. `pnpm install`
+4. `pnpm run build`
 
 ## Run SSH Socket Server
 
