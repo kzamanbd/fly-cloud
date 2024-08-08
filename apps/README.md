@@ -1,1 +1,1 @@
-# Fly Packages Directory
+# Fly Apps Directory
