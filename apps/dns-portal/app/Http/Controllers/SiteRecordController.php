@@ -12,7 +12,7 @@ class SiteRecordController extends Controller
     public function index()
     {
         return inertia('SitesRecords', [
-            'sites' => Site::all(),
+            'sites' => Site::query()->latest()->get(),
         ]);
     }
 
