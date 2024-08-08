@@ -31,15 +31,18 @@ COPY . .
 # Install PHP dependencies
 RUN composer install
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Install Node.js dependencies
-RUN npm install
+RUN pnpm install
 
 # Build assets
-RUN npm run build
+RUN pnpm run build
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/storage
-RUN chown -R www-data:www-data /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage
+RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
 
 # Copy .env.example to .env
 RUN cp .env.example .env

@@ -4,15 +4,18 @@ FROM node:20
 # Set working directory
 WORKDIR /usr/src/app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Install dependencies
 COPY package*.json ./
-RUN npm install
+RUN pnpm install
 
 # Copy application files
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN pnpm run build
 
 # Expose port and start the application
 EXPOSE 3000
