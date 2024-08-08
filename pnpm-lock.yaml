@@ -56,9 +56,6 @@ importers:
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
-      laravel-echo:
-        specifier: ^1.16.1
-        version: 1.16.1
       laravel-vite-plugin:
         specifier: ^1.0
         version: 1.0.5(vite@5.3.5(@types/node@18.19.43))
@@ -71,9 +68,6 @@ importers:
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
-      pusher-js:
-        specifier: ^8.4.0-rc2
-        version: 8.4.0-rc2
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -2027,10 +2021,6 @@ packages:
   kuler@2.0.0:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
 
-  laravel-echo@1.16.1:
-    resolution: {integrity: sha512-++Ylb6M3ariC9Rk5WE5gZjj6wcEV5kvLF8b+geJ5/rRIfdoOA+eG6b9qJPrarMD9rY28Apx+l3eelIrCc2skVg==}
-    engines: {node: '>=10'}
-
   laravel-vite-plugin@1.0.5:
     resolution: {integrity: sha512-Zv+to82YLBknDCZ6g3iwOv9wZ7f6EWStb9pjSm7MGe9Mfoy5ynT2ssZbGsMr1udU6rDg9HOoYEVGw5Qf+p9zbw==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -2529,9 +2519,6 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  pusher-js@8.4.0-rc2:
-    resolution: {integrity: sha512-d87GjOEEl9QgO5BWmViSqW0LOzPvybvX6WA9zLUstNdB57jVJuR27zHkRnrav2a3+zAMlHbP2Og8wug+rG8T+g==}
-
   qs@6.11.0:
     resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
     engines: {node: '>=0.6'}
@@ -2922,9 +2909,6 @@ packages:
 
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
-
-  tweetnacl@1.0.3:
-    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -5107,8 +5091,6 @@ snapshots:
 
   kuler@2.0.0: {}
 
-  laravel-echo@1.16.1: {}
-
   laravel-vite-plugin@1.0.5(vite@5.3.5(@types/node@18.19.43)):
     dependencies:
       picocolors: 1.0.1
@@ -5586,10 +5568,6 @@ snapshots:
   pstree.remy@1.1.8: {}
 
   punycode@2.3.1: {}
-
-  pusher-js@8.4.0-rc2:
-    dependencies:
-      tweetnacl: 1.0.3
 
   qs@6.11.0:
     dependencies:
@@ -6072,8 +6050,6 @@ snapshots:
   tsscmp@1.0.6: {}
 
   tweetnacl@0.14.5: {}
-
-  tweetnacl@1.0.3: {}
 
   type-check@0.4.0:
     dependencies:
