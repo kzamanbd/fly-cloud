@@ -1,22 +1,17 @@
-# Base image
-FROM node:20
+# Base Image
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Install pnpm
-RUN npm install -g pnpm
-
-# Install dependencies
-COPY package*.json ./
-RUN pnpm install
-
-# Copy application files
+# Copy Express app
 COPY . .
 
-# Build the application
-RUN pnpm run build
+# Install Node.js dependencies using pnpm
+RUN npm install -g pnpm && pnpm install
 
-# Expose port and start the application
+# Expose port
 EXPOSE 3000
-CMD ["node", "build/index.js"]
+
+# Start the app
+CMD ["pnpm", "app:dev"]
