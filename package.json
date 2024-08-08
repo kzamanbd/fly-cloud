@@ -11,7 +11,8 @@
         "portal:dev": "nx dev dns-portal",
         "ssh:dev": "nx dev ssh-server",
         "app:dev": "concurrently \"pnpm portal:dev\" \"pnpm ssh:dev\"",
-        "ssh:start": "nx start ssh-server"
+        "ssh:start": "nx start ssh-server",
+        "artisan": "pnpm --filter dns-portal exec php artisan"
     },
     "devDependencies": {
         "concurrently": "^8.2.2",
