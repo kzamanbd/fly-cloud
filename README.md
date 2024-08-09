@@ -39,8 +39,8 @@ This is a simple DNS portal for FlyWP that allows you to manage your DNS records
 10. Run the migrations
 11. `php artisan migrate`
 12. Run the server
-13. `php artisan serve`
-14. Visit the site at `http://localhost:8000`
+13. `php artisan serve --port=8001`
+14. Visit the site at `http://localhost:8001`
 
 ## Installation Node Dependencies and Build
 
@@ -51,7 +51,11 @@ This is a simple DNS portal for FlyWP that allows you to manage your DNS records
 
 ## Run SSH Socket Server
 
-1. `pnpm run ssh:start`
+1. `pnpm ssh:start`
+
+## If you want to run both app development mode just run this command
+
+ `pnpm app:dev`
 
 ## Setup ENV Variables
 
