@@ -1,20 +1,11 @@
 {
-    "arrowParens": "always",
-    "bracketSpacing": true,
-    "insertPragma": false,
-    "jsxBracketSameLine": true,
-    "bracketSameLine": true,
-    "jsxSingleQuote": true,
-    "printWidth": 120,
-    "proseWrap": "preserve",
-    "quoteProps": "as-needed",
-    "requirePragma": false,
+    "$schema": "https://json.schemastore.org/prettierrc",
     "semi": true,
-    "singleQuote": true,
     "tabWidth": 4,
+    "singleQuote": true,
+    "printWidth": 100,
     "trailingComma": "none",
-    "useTabs": false,
-    "vueIndentScriptAndStyle": true,
-    "endOfLine": "lf",
-    "pluginSearchDirs": false
+    "bracketSameLine": true,
+    "endOfLine": "crlf",
+    "vueIndentScriptAndStyle": true
 }

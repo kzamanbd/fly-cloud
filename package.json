@@ -4,19 +4,27 @@
     "workspaces": [
         "apps/*"
     ],
+    "packageManager": "pnpm@8.15.6",
     "scripts": {
-        "graph": "nx graph",
-        "build": "nx run-many --target=build --all",
-        "dev": "nx run-many --target=dev --all",
-        "portal:dev": "nx dev dns-portal",
-        "ssh:dev": "nx dev ssh-server",
-        "app:dev": "concurrently \"pnpm portal:dev\" \"pnpm ssh:dev\"",
-        "ssh:start": "nx start ssh-server",
-        "artisan": "pnpm --filter dns-portal exec php artisan"
+        "build": "turbo build",
+        "dev": "turbo dev",
+        "lint": "turbo lint",
+        "ssh:start": "pnpm --filter=ssh-server start",
+        "format": "prettier --write \"**/*.{ts,tsx}\""
     },
+    "keywords": [
+        "laravel",
+        "react",
+        "express",
+        "socket.io"
+    ],
+    "author": "Kamruzzaman",
+    "license": "MIT",
     "devDependencies": {
-        "concurrently": "^8.2.2",
-        "nx": "19.5.6",
-        "typescript": "5.5.4"
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "prettier": "^3.3.3",
+        "turbo": "^2.0.12",
+        "typescript": "^5.5.4"
     }
 }
