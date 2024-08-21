@@ -9,7 +9,7 @@ import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { FormEventHandler, useRef, useState } from 'react';
 import { dateFormat } from '@/utils';
-import Button from '@/Components/Button';
+import Button from '@/Components/PrimaryButton';
 import { CiLogin, CiEdit } from 'react-icons/ci';
 import { IoTerminal, IoAdd } from 'react-icons/io5';
 import { HiDotsVertical } from 'react-icons/hi';

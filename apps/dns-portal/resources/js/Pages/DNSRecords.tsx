@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import InputError from '@/Components/InputError';
 import { CiEdit, CiSearch } from 'react-icons/ci';
 import { HiDotsVertical } from 'react-icons/hi';
-import Button from '@/Components/Button';
+import Button from '@/Components/PrimaryButton';
 import { IoAdd } from 'react-icons/io5';
 import { VscLoading } from 'react-icons/vsc';
 

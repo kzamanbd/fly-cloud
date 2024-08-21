@@ -1,4 +1,5 @@
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, useEffect, useState } from 'react';
+import { router } from '@inertiajs/react';
 
 export default function PrimaryButton({
     className = '',
@@ -6,11 +7,24 @@ export default function PrimaryButton({
     children,
     ...props
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        router.on('start', () => {
+            setLoading(true);
+        });
+        router.on('finish', () => {
+            setLoading(false);
+        });
+    }, []);
+
+    const isDisabled = disabled || loading;
+
     return (
         <button
             {...props}
-            className={`btn btn-primary ${disabled && 'opacity-25'} ` + className}
-            disabled={disabled}>
+            className={`btn h-max ${isDisabled && 'opacity-25'} ${className}`}
+            disabled={isDisabled}>
             {children}
         </button>
     );
