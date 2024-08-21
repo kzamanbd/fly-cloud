@@ -11,7 +11,8 @@
         "dev": "turbo dev",
         "lint": "turbo lint",
         "ssh:start": "pnpm --filter=ssh-server start",
-        "format": "prettier --write \"**/*.{ts,tsx}\""
+        "format": "prettier --write \"**/*.{ts,tsx}\"",
+        "artisan": "pnpm --filter=dns-portal exec php artisan"
     },
     "keywords": [
         "laravel",
