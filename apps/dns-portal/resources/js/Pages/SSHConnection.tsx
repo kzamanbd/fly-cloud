@@ -10,6 +10,9 @@ import Modal from '@/Components/Modal';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import SecondaryButton from '@/Components/SecondaryButton';
+import { ITheme } from '@xterm/xterm';
+import { IXTerminal } from '@/utils/themes';
+import ThemesMenu from '@/Components/ThemesMenu';
 
 type SSHConnectionProps = PageProps & {
     site: SiteRecord;
@@ -26,6 +29,14 @@ export default ({ auth, site }: SSHConnectionProps) => {
 
     // ref input for terminal
     const hostRef = useRef<HTMLElement>(null);
+
+    const [title, setTitle] = useState('Terminal');
+    const [theme, setTheme] = useState({} as ITheme);
+
+    const themeChangeHandler = ({ theme }: IXTerminal) => {
+        setTheme(theme);
+        localStorage.setItem('theme', JSON.stringify(theme));
+    };
 
     useEffect(() => {
         if (site?.uuid) {
@@ -47,6 +58,17 @@ export default ({ auth, site }: SSHConnectionProps) => {
                 }
             }
         }
+        socket.on('ssh-ready', () => {
+            setIsLoading(false);
+        });
+        socket.on('title', (data: string) => {
+            setTitle(data);
+        });
+
+        return () => {
+            socket.off('ssh-ready');
+            socket.off('title');
+        };
     }, []);
 
     const connectionAction = ({
@@ -148,11 +170,32 @@ export default ({ auth, site }: SSHConnectionProps) => {
             }>
             <Head title="SSHConnection" />
 
-            <div className="py-6">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <XTerminalUI isLoading={isLoading} setIsLoading={setIsLoading} />
+            <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="shadow-2xl subpixel-antialiased h-full bg-black border-black mx-auto">
+                    <div className="p-2 grid grid-cols-3 items-center justify-between bg-gray-200 border-b border-gray-500 text-center text-black">
+                        <div className="relative flex gap-2">
+                            <button type="button">File</button>
+                            <button type="button">Edit</button>
+                            <button type="button">View</button>
+                            <ThemesMenu changeTheme={themeChangeHandler} />
+                            <button type="button" onClick={toggleModal}>
+                                New Connection
+                            </button>
+                            <button type="button">Help</button>
+                        </div>
+
+                        <p className="text-center text-sm">{title}</p>
+
+                        <div className="flex ml-auto gap-2">
+                            <div className="border-green-900 bg-green-500 shadow-inner rounded-full w-3 h-3"></div>
+                            <div className="border-yellow-900 bg-yellow-500 shadow-inner rounded-full w-3 h-3"></div>
+                            <div className="flex items-center text-center border-red-900 bg-red-500 shadow-inner rounded-full w-3 h-3"></div>
+                        </div>
+                    </div>
+                    <XTerminalUI loading={isLoading} theme={theme} />
                 </div>
             </div>
+
             <Modal show={isModal} maxWidth="md" onClose={closeModal}>
                 <form onSubmit={connectSSH}>
                     <div>

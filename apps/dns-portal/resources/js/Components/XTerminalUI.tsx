@@ -1,121 +1,145 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Terminal } from '@xterm/xterm';
-import '@xterm/xterm/css/xterm.css';
-import { FitAddon } from '@xterm/addon-fit';
 import socket from '@/utils/socket';
+import { defaultTheme } from '@/utils/themes';
+import { FitAddon } from '@xterm/addon-fit';
+import { SearchAddon } from '@xterm/addon-search';
+import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { WebLinksAddon } from '@xterm/addon-web-links';
+import { ITheme, Terminal } from '@xterm/xterm';
+import '@xterm/xterm/css/xterm.css';
+import { useCallback, useEffect, useRef } from 'react';
 
-const instanceXTerm = new Terminal({
-    cursorBlink: true,
-    rows: 30
-});
 const fitAddon = new FitAddon();
-instanceXTerm.loadAddon(fitAddon);
+const webLinksAddon = new WebLinksAddon();
+const searchAddon = new SearchAddon();
+const unicode11Addon = new Unicode11Addon();
 
 type TerminalProps = {
-    isLoading: boolean;
-    setIsLoading?: Dispatch<SetStateAction<boolean>>;
+    loading: boolean;
+    theme?: ITheme;
 };
 
-const XTerminalUI = ({ isLoading, setIsLoading }: TerminalProps) => {
-    const terminalRef = useRef(null) as any;
-    const [xTerm, setXTerm] = useState<Terminal | null>(null);
-    const [terminalTitle, setTerminalTitle] = useState('XTerminal');
+const XTerminalUI = ({ loading, theme }: TerminalProps) => {
+    const terminalRef = useRef({} as HTMLDivElement);
 
-    const resizeScreen = () => {
+    const xtermRef = useRef(
+        new Terminal({
+            cursorBlink: true,
+            fontFamily: 'monospace',
+            theme: defaultTheme,
+            allowProposedApi: true
+        })
+    );
+
+    const resizeScreen = useCallback(() => {
         fitAddon.fit();
-        socket.emit('resize', { cols: xTerm?.cols, rows: xTerm?.rows });
-        console.log(`resize: ${JSON.stringify({ cols: xTerm?.cols, rows: xTerm?.rows })}`);
+        const xterm = xtermRef.current;
+        socket.emit('resize', { cols: xterm.cols, rows: xterm.rows });
+        console.log(`resize: ${JSON.stringify({ cols: xterm.cols, rows: xterm.rows })}`);
+    }, []);
+
+    const defaultInput = () => {
+        xtermRef.current?.write('[root@kzaman ~]\x1b[31m$ \x1b[0m');
+        xtermRef.current.focus();
     };
 
+    /**
+     * Load xterm addons and set the terminal theme
+     * Set the terminal background color
+     * Add event listener for window resize
+     * Emit resize event to the server
+     * Listen for ssh-output, ssh-ready, ssh-error, ssh-close, no-connection-output events
+     * Listen for theme change event
+     */
+
     useEffect(() => {
-        if (terminalRef.current) {
-            instanceXTerm.open(terminalRef.current);
-            instanceXTerm.focus();
-            fitAddon.fit();
-            setXTerm(instanceXTerm);
-            instanceXTerm.writeln('Welcome to XTerminal');
-            instanceXTerm.write('\x1b[31m$ \x1b[0m');
-            resizeScreen();
+        const xterm = xtermRef.current;
+        xterm.loadAddon(fitAddon);
+        xterm.loadAddon(searchAddon);
+        xterm.loadAddon(webLinksAddon);
+        xterm.loadAddon(unicode11Addon);
+        xterm.unicode.activeVersion = '11';
+        xterm.open(terminalRef.current);
+        xterm.writeln('Welcome to XTerminal');
+        defaultInput();
+
+        // set theme if available in local storage
+        const theme = localStorage.getItem('theme');
+        if (theme) {
+            const parsedTheme = JSON.parse(theme);
+            xterm.options.theme = parsedTheme;
+
+            // set background color for the terminal
+            terminalRef.current.style.backgroundColor = parsedTheme.background;
+        } else {
+            terminalRef.current.style.backgroundColor = defaultTheme.background as string;
         }
+        resizeScreen();
 
         window.addEventListener('resize', resizeScreen, false);
 
         return () => {
             window.removeEventListener('resize', resizeScreen);
         };
-    }, []);
+    }, [resizeScreen]);
 
     useEffect(() => {
+        const xterm = xtermRef.current;
         socket.on('ssh-output', (data) => {
-            if (xTerm) {
-                xTerm.write(data);
-            }
+            xterm.write(data);
         });
 
         socket.on('ssh-ready', () => {
-            console.log('SSH connection ready');
-            xTerm?.writeln('SSH connection ready');
-            if (setIsLoading) {
-                setIsLoading(false);
-            }
+            xterm?.writeln('Successfully connected to server\r');
+            xterm.focus();
         });
 
         socket.on('ssh-error', (err) => {
             console.error('SSH Error:', err);
-            xTerm?.writeln(`Error: ${err}`);
-            if (setIsLoading) {
-                setIsLoading(false);
-            }
+            xterm?.writeln(`Error: ${err}\r`);
         });
 
-        if (xTerm) {
-            xTerm.onData((data: string) => {
-                socket.emit('ssh-input', data);
-            });
-        }
+        xterm.onData((data: string) => {
+            socket.emit('ssh-input', data);
+        });
 
-        socket.on('title', (data: string) => {
-            setTerminalTitle(data);
+        socket.on('no-connection-output', () => {
+            xterm?.writeln('\r\nCommand not found! Please check the command and try again.\r');
+            defaultInput();
+        });
+
+        socket.on('ssh-close', () => {
+            xterm.writeln('Connection closed\r');
+            defaultInput();
         });
 
         return () => {
             socket.off('ssh-output');
             socket.off('ssh-ready');
             socket.off('ssh-error');
-            socket.off('title');
+            socket.off('resize');
+            socket.off('ssh-close');
+            socket.off('no-connection-output');
         };
-    }, [xTerm]);
+    }, []);
 
     useEffect(() => {
-        if (isLoading && xTerm) {
-            xTerm.clear();
-            xTerm.writeln('Connecting to server...');
+        if (loading) {
+            xtermRef.current.clear();
+            xtermRef.current.writeln('Connecting to server...\r');
         }
-    }, [isLoading]);
+    }, [loading]);
 
-    return (
-        <div className="w-full">
-            <div className="w-full shadow-2xl subpixel-antialiased rounded h-full bg-black border-black mx-auto">
-                <div
-                    className="flex items-center h-8 rounded-t bg-gray-200 border-b border-gray-500 text-center text-black"
-                    id="headerTerminal">
-                    <div
-                        className="flex ml-2 items-center text-center border-red-900 bg-red-500 shadow-inner rounded-full w-3 h-3"
-                        id="closebtn"></div>
-                    <div
-                        className="ml-2 border-yellow-900 bg-yellow-500 shadow-inner rounded-full w-3 h-3"
-                        id="minbtn"></div>
-                    <div
-                        className="ml-2 border-green-900 bg-green-500 shadow-inner rounded-full w-3 h-3"
-                        id="maxbtn"></div>
-                    <div className="mx-auto pr-16" id="terminaltitle">
-                        <p className="text-center text-sm">{terminalTitle}</p>
-                    </div>
-                </div>
-                <div className="w-full pl-4 pt-4" ref={terminalRef}></div>
-            </div>
-        </div>
-    );
+    useEffect(() => {
+        if (theme?.background) {
+            xtermRef.current.options.theme = theme;
+            // set background color for the terminal
+            if (terminalRef.current) {
+                terminalRef.current.style.background = theme.background as string;
+            }
+        }
+    }, [theme]);
+
+    return <div className="h-[calc(100%-50px)] pl-2 pt-2" ref={terminalRef}></div>;
 };
 
 export default XTerminalUI;
