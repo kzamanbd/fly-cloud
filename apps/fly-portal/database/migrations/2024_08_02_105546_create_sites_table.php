@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Server;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,7 @@ return new class extends Migration
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique()->index();
+            $table->foreignIdFor(Server::class)->onDelete('cascade');
             $table->string('name')->nullable();
             $table->string('username')->nullable();
             $table->string('ip_address')->nullable();

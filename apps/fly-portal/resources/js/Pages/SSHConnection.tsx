@@ -155,22 +155,10 @@ export default ({ auth, site }: SSHConnectionProps) => {
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={
-                <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                        SSH Terminal
-                    </h2>
-
-                    <PrimaryButton onClick={toggleModal} disabled={isLoading}>
-                        Reconnect
-                    </PrimaryButton>
-                </div>
-            }>
+        <div>
             <Head title="SSHConnection" />
 
-            <div className="max-w-7xl rounded-md mx-auto sm:px-6 lg:px-8">
+            <div className="w-full">
                 <div className="shadow-2xl subpixel-antialiased h-full overflow-hidden">
                     <div className="p-2 grid grid-cols-3 items-center justify-between bg-gray-200 border-b border-gray-500 text-center text-black">
                         <div className="relative flex gap-2">
@@ -290,7 +278,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
                     </div>
                 </form>
             </Modal>
-        </AuthenticatedLayout>
+        </div>
     );
 };
 

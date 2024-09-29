@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class SSHController extends Controller
 {
-    public function index(Request $request)
+    public function console(Request $request)
     {
         $site = array();
         $uuid = $request->get('uuid');

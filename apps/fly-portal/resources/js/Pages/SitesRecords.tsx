@@ -257,7 +257,7 @@ export default ({ auth, sites }: Props) => {
                                         </a>
 
                                         <a
-                                            href={route('ssh', { uuid: site.uuid })}
+                                            href={route('console', { uuid: site.uuid })}
                                             data-tooltip-id="ssh-connect"
                                             target="_blank">
                                             <IoTerminal className="size-5" />
