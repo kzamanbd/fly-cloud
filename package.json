@@ -1,5 +1,5 @@
 {
-    "name": "fly-dns-portal",
+    "name": "fly-cloud",
     "private": true,
     "workspaces": [
         "apps/*",

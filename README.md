@@ -1,4 +1,4 @@
-# 🧑‍💻 FlyWP DNS Portal
+# 🧑‍💻 Fly Cloud
 
 This is a simple DNS portal for FlyWP that allows you to manage your DNS records for your FlyWP apps.
 
