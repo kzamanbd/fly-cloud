@@ -156,7 +156,7 @@ export default ({ auth, site }: SSHConnectionProps) => {
 
     return (
         <div>
-            <Head title="SSHConnection" />
+            <Head title="Console" />
 
             <div className="w-full">
                 <div className="shadow-2xl subpixel-antialiased h-full overflow-hidden">
