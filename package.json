@@ -12,12 +12,14 @@
         "lint": "turbo lint",
         "ssh:start": "pnpm --filter=ssh-server start",
         "format": "prettier --write \"**/*.{ts,tsx}\"",
-        "artisan": "pnpm --filter=dns-portal exec php artisan"
+        "artisan": "pnpm --filter=fly-portal exec php artisan",
+        "postinstall": "pnpm --filter=fly-portal exec composer install && pnpm build"
     },
     "keywords": [
         "laravel",
         "react",
         "express",
+        "nestjs",
         "socket.io"
     ],
     "author": "Kamruzzaman",

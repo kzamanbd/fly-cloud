@@ -24,7 +24,7 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  apps/dns-portal:
+  apps/fly-portal:
     devDependencies:
       '@headlessui/react':
         specifier: ^2.0.0
