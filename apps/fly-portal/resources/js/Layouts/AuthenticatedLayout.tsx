@@ -41,23 +41,19 @@ export default function Authenticated({
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}>
-                                    Dashboard
+                                    Servers
                                 </NavLink>
 
                                 <NavLink
                                     href={route('sites.index')}
                                     active={route().current('sites.index')}>
-                                    Hosted Sites
+                                    Sites
                                 </NavLink>
 
                                 <NavLink
                                     href={route('dns.index')}
                                     active={route().current('dns.index')}>
                                     DNS (Cloudflare)
-                                </NavLink>
-
-                                <NavLink href={route('ssh')} active={route().current('ssh')}>
-                                    SSH
                                 </NavLink>
                             </div>
                         </div>

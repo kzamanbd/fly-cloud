@@ -21,11 +21,6 @@ class SSHAction
 
     protected bool $isConnected = false;
 
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * @return array
      */
@@ -115,7 +110,7 @@ class SSHAction
      * @return SSH2
      */
 
-    public function startInteractiveSession() : SSH2
+    public function startInteractiveSession(): SSH2
     {
         $this->ssh->setTimeout(0);
         return $this->ssh;
