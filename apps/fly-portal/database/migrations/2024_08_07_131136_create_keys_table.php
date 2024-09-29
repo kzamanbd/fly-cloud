@@ -11,12 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('private_keys', function (Blueprint $table) {
+        Schema::create('keys', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('site_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('site_id')
+                ->constrained()
+                ->nullable()
+                ->cascadeOnDelete();
             $table->string('name')->nullable();
             $table->text('private_key')->nullable();
             $table->text('public_key')->nullable();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->nullable()
+                ->nullOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('private_keys');
+        Schema::dropIfExists('keys');
     }
 };

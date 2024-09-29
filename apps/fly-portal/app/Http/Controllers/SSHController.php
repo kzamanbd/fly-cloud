@@ -16,7 +16,7 @@ class SSHController extends Controller
         $site = array();
         $uuid = $request->get('uuid');
         if ($uuid) {
-            $site = Site::with(['privateKeys'])->where('uuid', $uuid)->first();
+            $site = Site::with(['keys'])->where('uuid', $uuid)->first();
         }
 
         return inertia('SSHConnection', [

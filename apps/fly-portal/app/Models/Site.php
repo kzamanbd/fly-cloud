@@ -30,8 +30,8 @@ class Site extends Model
         });
     }
 
-    public function privateKeys()
+    public function keys()
     {
-        return $this->hasMany(PrivateKey::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(Key::class)->orderBy('created_at', 'desc');
     }
 }

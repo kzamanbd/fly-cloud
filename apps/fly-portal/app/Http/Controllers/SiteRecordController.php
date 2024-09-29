@@ -25,7 +25,7 @@ class SiteRecordController extends Controller
             if ($request->input('privateKey')) {
                 $name = $site->name . ' Private Key' ?? 'Private Key' . $site->id;
 
-                $site->privateKeys()->create([
+                $site->keys()->create([
                     'name' => $name,
                     'private_key' => encrypt($request->input('privateKey')),
                     'public_key' => encrypt($request->input('publicKey'))
@@ -57,7 +57,7 @@ class SiteRecordController extends Controller
             if ($request->input('privateKey')) {
                 $name = $site->name . ' Private Key' ?? 'Private Key' . $site->id;
 
-                $site->privateKeys()->create([
+                $site->keys()->create([
                     'name' => $name,
                     'private_key' => encrypt($request->input('privateKey')),
                     'public_key' => encrypt($request->input('publicKey'))
