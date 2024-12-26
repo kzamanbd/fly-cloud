@@ -61,7 +61,8 @@ This is a simple DNS portal for FlyWP that allows you to manage your DNS records
 
 - `CLOUDFLARE_DNS_TOKEN` - Cloudflare API Token (DNS Edit)
 
-## Others Project Requirements
+## Inspiration [Vito](https://github.com/vitodeploy/vito)
 
-- [WP Magic Plugin](https://github.com/kzamanbd/wp-magic-login)
-- [Fly CLI](https://github.com/kzamanbd/fly-cli)
+## Author
+
+- [Kamruzzaman](https://github.com/kzamanbd)
